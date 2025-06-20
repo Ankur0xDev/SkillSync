@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   Clock,
   Star,
+  Users,
   Check
 } from 'lucide-react';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -33,6 +34,7 @@ interface PublicProfile {
   experience: string;
   lookingFor: string[];
   profileViews: number;
+  connections:string[];
   createdAt: string;
   lastSeen: string;
   profilePicture?: string;
@@ -68,7 +70,7 @@ export const PublicProfilePage: React.FC = () => {
       setLoading(false);
     }
   };
-
+  // console.log(profile)
   const fetchConnectionStatus = async () => {
     try {
       const response = await axios.get('/connections');
@@ -193,7 +195,7 @@ export const PublicProfilePage: React.FC = () => {
           </div>
           
           <div className="relative px-8 pb-8">
-            <div className={`flex flex-col sm:flex-row items-start sm:items-end space-y-4 sm:space-y-0 sm:space-x-6 -mt-16`}>
+            <div className={`flex flex-col sm:flex-row items-start sm:items-end space-y-4 sm:space-y-0 sm:space-x-6 -mt-8`}>
               <div className={`w-32 h-32 ${profile.profilePicture ? 'bg-white/20' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-2xl shadow-lg flex items-center justify-center border-4 border-white overflow-hidden`}>
                 {profile.profilePicture ? (
                   <img 
@@ -254,7 +256,7 @@ export const PublicProfilePage: React.FC = () => {
                     </button>
                   )}
                   {!isOwnProfile && isAuthenticated && isConnected && (
-                    <div className="bg-green-100 text-green-800 px-6 py-2 mt-4 rounded-lg flex items-center space-x-2">
+                    <div className="bg-green-100 text-green-800 px-6 py-2 mt-4  rounded-lg flex items-center space-x-2">
                       <Check className="w-4 h-4" />
                       <span>Connected</span>
                     </div>
@@ -357,6 +359,17 @@ export const PublicProfilePage: React.FC = () => {
                     <span className="text-gray-600">Profile Views</span>
                   </div>
                   <span className="font-semibold text-gray-900">{profile.profileViews}</span>
+                  
+                  
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-gray-500" />
+                    <span className="text-gray-600">Connections</span>
+                  </div>
+                  <span className="font-semibold text-gray-900">{profile.connections.length}</span>
+                  
+                  
                 </div>
               </div>
             </motion.div>
@@ -402,7 +415,7 @@ export const PublicProfilePage: React.FC = () => {
             </motion.div>
 
             {/* Links */}
-            {(profile.github || profile.linkedin || profile.website) && (
+            {(profile.github || profile.linkedin || profile.website)  ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -416,7 +429,7 @@ export const PublicProfilePage: React.FC = () => {
                       href={profile.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 transition-colors"
+                      className="flex items-center space-x-3 text-blue-600 hover:text-gray-900 transition-colors"
                     >
                       <Github className="w-5 h-5" />
                       <span>GitHub</span>
@@ -427,7 +440,7 @@ export const PublicProfilePage: React.FC = () => {
                       href={profile.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 transition-colors"
+                      className="flex items-center space-x-3 text-blue-600 hover:text-gray-900 transition-colors"
                     >
                       <Linkedin className="w-5 h-5" />
                       <span>LinkedIn</span>
@@ -438,7 +451,7 @@ export const PublicProfilePage: React.FC = () => {
                       href={profile.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 transition-colors"
+                      className="flex items-center space-x-3 text-blue-600 hover:text-gray-900 transition-colors"
                     >
                       <Globe className="w-5 h-5" />
                       <span>Website</span>
@@ -446,6 +459,20 @@ export const PublicProfilePage: React.FC = () => {
                   )}
                 </div>
               </motion.div>
+            ):(
+              <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="bg-white rounded-2xl shadow-lg p-6"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Links</h3>
+                <div>
+                  <p className='0'>Not Provided</p>
+                </div>
+
+              </motion.div>
+
             )}
 
             {/* Connect CTA */}
