@@ -11,7 +11,7 @@ import {
   LogOut, 
   Menu, 
   X,
-  Bell,
+  // Bell,
   FolderOpen
 } from 'lucide-react';
 import { useAuth } from '../Contexts/AuthContext';
@@ -94,10 +94,10 @@ export const Navbar: React.FC = () => {
             {isAuthenticated ? (
               <>
                 {/* Notifications */}
-                <button className="p-2 text-gray-400 hover:text-gray-600 relative">
+                {/* <button className="p-2 text-gray-400 hover:text-gray-600 relative">
                   <Bell className="w-5 h-5" />
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs"></span>
-                </button>
+                </button> */}
                 {/* Profile Menu */}
                 <div className="relative">
                   <button

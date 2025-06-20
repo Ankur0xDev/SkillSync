@@ -3,12 +3,10 @@ import { motion } from 'framer-motion';
 import { 
   Users, 
   UserPlus, 
-  UserMinus, 
   Check, 
   X, 
   Search,
   MapPin,
-  Calendar,
   Mail
 } from 'lucide-react';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -283,11 +281,19 @@ export const ConnectionsPage: React.FC = () => {
                       className="bg-white rounded-xl shadow p-6 flex flex-col space-y-4"
                     >
                       <div className="flex items-center space-x-4">
+                        {
+                          connection.user.profilePicture ? 
                         <img
-                          src={connection.user.profilePicture}
+                          src={connection.user.profilePicture }
                           alt={connection.user.name}
                           className="w-14 h-14 rounded-full object-cover border"
                         />
+
+                        :(
+                          <div className='h-20 w-20 text-white font-bold text-4xl bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-lg flex items-center justify-center border-4 border-white overflow-hidden'>
+                            {connection.user.name.charAt(0).toUpperCase()}
+                            </div>
+                        )}
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">
                             {connection.user.name}

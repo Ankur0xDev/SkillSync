@@ -92,7 +92,7 @@ const DirectChat: React.FC = () => {
   const otherUser = chat.participants.find((p) => p._id !== user?._id);
 
   return (
-    <div className="flex flex-col h-full max-h-[80vh] bg-white rounded-xl shadow-lg">
+    <div className="flex flex-col h-screen max-h-[80vh] bg-white rounded-xl shadow-lg">
       <div className="p-4 border-b flex items-center space-x-3">
         {otherUser?.profilePicture ? (
           <img src={otherUser.profilePicture} alt={otherUser.name} className="w-10 h-10 rounded-full" />
