@@ -227,7 +227,7 @@ export const ProfilePage: React.FC = () => {
                   {profile.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100 rounded-full text-sm"
+                      className="px-3 bg-purple-300 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100 rounded-full text-sm"
                     >
                       {skill}
                     </span>
@@ -246,7 +246,7 @@ export const ProfilePage: React.FC = () => {
                   {profile.interests.map((interest) => (
                     <span
                       key={interest}
-                      className="px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100 rounded-full text-sm"
+                      className="px-3 py-1  bg-purple-100  text-primary-800 dark:text-primary-100 rounded-full text-sm"
                     >
                       {interest}
                     </span>
@@ -325,7 +325,7 @@ export const ProfilePage: React.FC = () => {
             </motion.div>
 
             {/* Links */}
-            {(profile.githubUrl || profile.linkedin || profile.website) && (
+            {(profile.github || profile.linkedin || profile.website) ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -334,9 +334,9 @@ export const ProfilePage: React.FC = () => {
               >
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Links</h2>
                 <div className="space-y-4">
-                  {profile.githubUrl && (
+                  {profile.github && (
                     <a
-                      href={profile.githubUrl}
+                      href={profile.github}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
@@ -368,6 +368,19 @@ export const ProfilePage: React.FC = () => {
                     </a>
                   )}
                 </div>
+              </motion.div>
+            ):(
+              <motion.div  
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-white rounded-2xl shadow-lg p-8"
+              >
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Links</h2>
+                <div className='space-y-4 text-gray-400 italic'>
+                  Not provided
+                </div>
+
               </motion.div>
             )}
           </div>
