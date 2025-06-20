@@ -468,7 +468,7 @@ export const PublicProfilePage: React.FC = () => {
               >
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Links</h3>
                 <div>
-                  <p className='0'>Not Provided</p>
+                  <p className='text-gray-400 italic'>Not Provided</p>
                 </div>
 
               </motion.div>
