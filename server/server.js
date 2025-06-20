@@ -18,10 +18,6 @@ import teamDashboardRoutes from './Routes/teamDashboard.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Security middleware
-app.use(helmet());
 const allowedOrigins = ['http://localhost:5173', 'https://skill-sync-lime.vercel.app'];
 
 app.use(cors({
@@ -35,6 +31,11 @@ app.use(cors({
   },
   credentials: true
 }));
+const PORT = process.env.PORT || 5000;
+
+// Security middleware
+app.use(helmet());
+
 
 
 // Rate limiting

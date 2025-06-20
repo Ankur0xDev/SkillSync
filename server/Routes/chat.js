@@ -1,5 +1,5 @@
 import express from 'express';
-import { Chat, User } from '../Models/index.js';
+import { Chat, User } from '../models/index.js';
 import { auth } from '../middleware/auth.js';
 
 const router = express.Router();
