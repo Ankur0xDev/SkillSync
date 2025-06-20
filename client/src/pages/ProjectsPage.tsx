@@ -109,7 +109,7 @@ export const ProjectsPage: React.FC = () => {
       const response = await axios.put(`/projects/${projectId}`, projectData);
       setProjects(prev => 
         prev.map(project => 
-          project?.id === projectId ? response.data : project
+          project._id === projectId ? response.data : project
         )
       );
       setShowEditModal(false);
