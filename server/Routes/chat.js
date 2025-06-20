@@ -92,4 +92,22 @@ router.post('/:chatId/messages', auth, async (req, res) => {
   }
 });
 
+// Get chat between logged-in user and another user (by userId)
+router.get('/user/:userId', auth, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    let chat = await Chat.findOne({
+      participants: { $all: [req.user._id, userId] }
+    })
+      .populate('participants', 'name profilePicture')
+      .populate('messages.sender', 'name profilePicture');
+    if (!chat) {
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+    res.json(chat);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 export default router; 

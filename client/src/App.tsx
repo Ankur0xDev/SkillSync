@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './Contexts/AuthContext';
@@ -7,7 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { IntroductionGuide } from './components/IntroductionGuide';
-
+import { ChatPage } from './pages/ChatPage';
 // Pages
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
@@ -26,6 +25,7 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import CreateProfilePage from './pages/CreateProfilePage';
 import { TeamDashboardPage } from './pages/TeamDashboardPage';
+import DirectChat from './components/DirectChat';
 
 function App() {
   return (
@@ -71,6 +71,17 @@ function App() {
                 <Route path="/connections" element={
                   <ProtectedRoute>
                     <ConnectionsPage />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/chat/:userId" element={
+                  <ProtectedRoute>
+                    <DirectChat />
+                  </ProtectedRoute>
+                } />
+                <Route path="/chat" element={
+                  <ProtectedRoute>
+                    <ChatPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/create-profile" element={

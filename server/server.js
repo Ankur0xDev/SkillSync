@@ -9,6 +9,7 @@ import { initializeSocket } from './socket.js';
 // Import routes
 import authRoutes from './Routes/auth.js';
 import userRoutes from './Routes/users.js';
+import chatRoutes from './Routes/chat.js';
 import connectionRoutes from './Routes/connections.js';
 import communityRoutes from './Routes/community.js';
 import projectRoutes from './Routes/projects.js';
@@ -77,6 +78,7 @@ connectDB();
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/chat', chatRoutes);
 app.use('/api/connections', connectionRoutes);
 app.use('/api/community', communityRoutes);
 app.use('/api/projects', projectRoutes);

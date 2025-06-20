@@ -14,6 +14,7 @@ import {
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface Connection {
   _id: string;
@@ -51,6 +52,7 @@ export const ConnectionsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [processingRequest, setProcessingRequest] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchConnections();
@@ -273,92 +275,50 @@ export const ConnectionsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredConnections.map((connection, index) => (
+                  {filteredConnections.map((connection) => (
                     <motion.div
                       key={connection._id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
+                      className="bg-white rounded-xl shadow p-6 flex flex-col space-y-4"
                     >
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className={`w-16 h-16 ${!connection.user?.profilePicture ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-transparent'} rounded-2xl flex items-center justify-center`}>
-                          {
-                            connection.user?.profilePicture ? (
-                              <img src={connection.user.profilePicture} alt="profile" className="w-full h-full object-cover rounded-full" />
-                            ) : (
-                              <span className="text-white text-xl font-bold">
-                                {connection.user.name.charAt(0).toUpperCase()}
-                              </span>
-                            )
-                          }
-                          {/* <span className="text-white text-xl font-bold">
-                            {connection.user.name.charAt(0).toUpperCase()}
-                          </span> */}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 truncate">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={connection.user.profilePicture}
+                          alt={connection.user.name}
+                          className="w-14 h-14 rounded-full object-cover border"
+                        />
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">
                             {connection.user.name}
                           </h3>
-                          {connection.user.country && (
-                            <div className="flex items-center space-x-1 text-sm text-gray-500">
-                              <MapPin className="w-3 h-3" />
-                              <span>{connection.user.country}</span>
-                            </div>
-                          )}
+                          <p className="text-gray-500 text-sm">{connection.user.country}</p>
                         </div>
                       </div>
-
-                      {connection.user.bio && (
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                          {connection.user.bio}
-                        </p>
-                      )}
-
-                      {connection.user.skills.length > 0 && (
-                        <div className="mb-4">
-                          <div className="flex flex-wrap gap-1">
-                            {connection.user.skills.slice(0, 3).map((skill, idx) => (
-                              <span
-                                key={idx}
-                                className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                            {connection.user.skills.length > 3 && (
-                              <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
-                                +{connection.user.skills.length - 3} more
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="w-3 h-3" />
-                          <span>Connected {new Date(connection.connectedAt).toLocaleDateString()}</span>
-                        </div>
+                      <p className="text-gray-600 text-sm line-clamp-2">{connection.user.bio}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {connection.user.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs"
+                          >
+                            {skill}
+                          </span>
+                        ))}
                       </div>
-
-                      <div className="flex space-x-3">
-                        <a
-                          href={`/profile/${connection.user._id}`}
-                          className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-center text-sm font-medium"
-                        >
-                          View Profile
-                        </a>
+                      <div className="flex space-x-2 mt-2">
                         <button
                           onClick={() => removeConnection(connection.user._id)}
                           disabled={processingRequest === connection.user._id}
-                          className="bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm"
                         >
-                          {processingRequest === connection.user._id ? (
-                            <LoadingSpinner size="sm" />
-                          ) : (
-                            <UserMinus className="w-4 h-4" />
-                          )}
+                          Remove
+                        </button>
+                        <button
+                          onClick={() => navigate(`/chat/${connection.user._id}`)}
+                          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                        >
+                          Message
                         </button>
                       </div>
                     </motion.div>

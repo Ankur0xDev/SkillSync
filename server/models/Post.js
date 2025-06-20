@@ -34,4 +34,4 @@ const postSchema = new mongoose.Schema({
 // Add text index for search functionality
 postSchema.index({ content: 'text', tags: 'text' });
 
-export default mongoose.model('Post', postSchema);
+export default mongoose.models.Post || mongoose.model('Post', postSchema);

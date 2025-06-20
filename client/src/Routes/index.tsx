@@ -1,4 +1,3 @@
-
 import { Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { Navbar } from '../components/Navbar';
@@ -22,6 +21,7 @@ import { ProjectsPage } from '../pages/ProjectsPage';
 import { ProjectDetailPage } from '../pages/ProjectDetailPage';
 import { TeamDashboardPage } from '../pages/TeamDashboardPage';
 import CreateProfilePage from '../pages/CreateProfilePage';
+import DirectChat from '../components/DirectChat';
 
 const AppRoutes = () => {
   return (
@@ -68,6 +68,11 @@ const AppRoutes = () => {
           <Route path="/chat" element={
             <ProtectedRoute>
               <ChatPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/chat/:userId" element={
+            <ProtectedRoute>
+              <DirectChat />
             </ProtectedRoute>
           } />
           <Route path="/projects" element={
