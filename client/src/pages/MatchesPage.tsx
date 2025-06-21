@@ -234,7 +234,7 @@ export const MatchesPage: React.FC = () => {
                       </span>
                     </div>
                   </div>
-
+ 
                   {/* Skills */}
                   {match.skills.length > 0 && (
                     <div className="mb-4">

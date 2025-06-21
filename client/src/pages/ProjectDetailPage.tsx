@@ -52,11 +52,9 @@ export const ProjectDetailPage: React.FC = () => {
     }
   }, [id]);
 
-  // Redirect if not authenticated and trying to access private features
   useEffect(() => {
     if (!isAuthenticated && !loading) {
-      // Only redirect if we're trying to access features that require authentication
-      // For now, let's just log a warning
+
       console.warn('User not authenticated, some features may be limited');
     }
   }, [isAuthenticated, loading]);
@@ -376,6 +374,7 @@ export const ProjectDetailPage: React.FC = () => {
                 {(project?.teamMemberCount || 0) > 0 && (
                   <div className="mb-6">
                     <h3 className="text-sm font-medium text-gray-700 mb-3">Team Members</h3>
+                    <div className='flex  justify-between'>
                     <div className="space-y-3">
                       {project?.teamMembers?.map((member) => (
                         <div key={member._id} className="flex items-center space-x-3">
@@ -399,45 +398,8 @@ export const ProjectDetailPage: React.FC = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => setShowPreview(true)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                      project?.projectUrl 
-                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Globe className="w-4 h-4" />
-                    <span>{project?.projectUrl ? 'Preview' : 'No Preview'}</span>
-                  </button>
-                  
-                  {/* Team Dashboard Button - Only for team members */}
-                  {(isOwner || isTeamMember) && (
-                    <Link
-                      to={`/team-dashboard/${project?._id}`}
-                      className="flex items-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
-                    >
-                      <Users className="w-4 h-4" />
-                      <span>Team Dashboard</span>
-                    </Link>
-                  )}
-                  
-                  {canRequestToJoin && (
-                    <button
-                      onClick={() => setShowTeamRequest(true)}
-                      className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      <UserPlus className="w-4 h-4" />
-                      <span>Join Team</span>
-                    </button>
-                  )}
-
-                  {isOwner && (project?.pendingTeamRequestsCount || 0) > 0 && (
+                    <div>
+                      {isOwner && (project?.pendingTeamRequestsCount || 0) > 0 && (
                     <button
                       onClick={() => setShowTeamManagement(true)}
                       className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
@@ -446,15 +408,56 @@ export const ProjectDetailPage: React.FC = () => {
                       <span>Manage Team ({project.pendingTeamRequestsCount})</span>
                     </button>
                   )}
+                    </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => setShowPreview(true)}
+                    className={`flex items-center space-x-2 px-4 py-1 rounded-lg transition-colors ${
+                      project?.projectUrl 
+                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span className='text-sm'>{project?.projectUrl ? 'Preview' : 'No Preview'}</span>
+                  </button>
+                  
+                  {/* Team Dashboard Button - Only for team members */}
+                  {(isOwner || isTeamMember) && (
+                    <Link
+                      to={`/team-dashboard/${project?._id}`}
+                      className="flex items-center space-x-4 bg-indigo-600 text-white px-4 py-1 rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
+                      <Users className="w-4 h-4" />
+                      <span className='text-sm'>Team Dashboard</span>
+                    </Link>
+                  )}
+                  
+                  {canRequestToJoin && (
+                    <button
+                      onClick={() => setShowTeamRequest(true)}
+                      className="flex items-center space-x-2 bg-green-600 text-white  py-1 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>Join Team</span>
+                    </button>
+                  )}
+
+                  
 
                   <a
                     href={project?.githubUrl || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                    className="flex items-center space-x-4 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                   >
                     <Github className="w-4 h-4" />
-                    <span>View on GitHub</span>
+                    <span className='text-sm'>View on GitHub</span>
                   </a>
                   
                   {project?.projectUrl && (

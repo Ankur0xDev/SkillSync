@@ -15,7 +15,7 @@ import type { CreateTaskData, UpdateTaskData } from '../types/teamDashboard';
 
 interface TaskModalProps {
   onClose: () => void;
-  onSubmit: (data: CreateTaskData | UpdateTaskData) => void | Promise<void>; // ✅ updated
+  onSubmit: (data: CreateTaskData | UpdateTaskData) => void | Promise<void>;
   projectId: string;
   projectMembers: any[]; //ts-ignpore
   task?: any;//ts-ignore
@@ -98,7 +98,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   ];
 
   const statuses = [
-    { value: 'todo', label: 'To Do', color: 'bg-gray-100 text-gray-800' },
+    { value: 'todo', label: 'To Do', color: 'bg-gray-200 text-gray-800' },
     { value: 'in-progress', label: 'In Progress', color: 'bg-blue-100 text-blue-800' },
     { value: 'review', label: 'Review', color: 'bg-purple-100 text-purple-800' },
     { value: 'done', label: 'Done', color: 'bg-green-100 text-green-800' }
@@ -189,7 +189,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         formData.status === status.value
                           ? status.color
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-400'
                       }`}
                     >
                       {status.label}

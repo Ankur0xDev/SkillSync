@@ -155,7 +155,7 @@ router.put('/:id', auth, [
   body('title').optional().trim().isLength({ min: 3, max: 100 }).withMessage('Title must be between 3-100 characters'),
   body('description').optional().trim().isLength({ min: 10, max: 1000 }).withMessage('Description must be between 10-1000 characters'),
   body('githubUrl').optional().isURL().withMessage('Please provide a valid GitHub URL'),
-  body('projectUrl').optional().isURL().withMessage('Please provide a valid project URL'),
+  body('projectUrl').trim().optional({checkFalsy: true}).isURL().withMessage('Please provide a valid project URL'),
   body('technologies').optional().isArray({ min: 1 }).withMessage('At least one technology is required'),
   body('status').optional().isIn(['in-progress', 'completed', 'on-hold']).withMessage('Invalid status')
 ], async (req, res) => {

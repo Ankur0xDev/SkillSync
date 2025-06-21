@@ -57,6 +57,9 @@ export const ProjectsPage: React.FC = () => {
 
   const handleCreateProject = async (projectData: any) => {
     try {
+      if (!projectData.projectUrl?.trim()) {
+      delete projectData.projectUrl;
+    }
       console.log('Creating project with data:', projectData);
       const response = await axios.post('/projects', projectData);
       console.log('Project created successfully:', response.data);

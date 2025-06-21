@@ -65,12 +65,6 @@ const connectDB = async () => {
     console.log('✅ Connected to MongoDB');
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
-    console.log('📝 Please ensure you have:');
-    console.log('   1. Created a MongoDB Atlas account at https://www.mongodb.com/atlas');
-    console.log('   2. Created a cluster and database user');
-    console.log('   3. Updated the MONGODB_URI in your .env file with your connection string');
-    console.log('   4. Whitelisted your IP address in MongoDB Atlas Network Access');
-    process.exit(1);
   }
 };
 
