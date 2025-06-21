@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, Code2 } from 'lucide-react';
 import { useAuth } from '../Contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-
+import toast from 'react-hot-toast';
 export const AuthPage: React.FC = () => {
   const { login, register, isAuthenticated, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
@@ -25,6 +25,9 @@ export const AuthPage: React.FC = () => {
     setFormLoading(true);
 
     try {
+      if(!formData.name ){
+        toast.error('Name is required')
+      }
       if (isLogin) {
         await login(formData.email, formData.password);
       } else {

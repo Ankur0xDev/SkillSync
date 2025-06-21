@@ -37,14 +37,24 @@ const getUserData = (user) => ({
 
 // Register
 router.post('/register', [
-  body('name').trim().isLength({ min: 2, max: 100 }).withMessage('Name must be between 2-100 characters'),
+  body('name')
+  .trim()
+  .isLength({ min: 3, max: 100 }).withMessage('Name must be between 3-100 characters')
+  .custom(value => {
+    const cleaned = value.replace(/\s/g, '');
+    if (cleaned.length < 3) {
+      throw new Error('Name must have at least 3 non-space characters');
+    }
+    return true;
+  })
+,
   body('email').isEmail().normalizeEmail().withMessage('Please enter a valid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+      return res.status(400).json({ message: errors.array()[0],  errors: errors.array() });
     }
 
     const { name, email, password } = req.body;

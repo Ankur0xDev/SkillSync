@@ -13,6 +13,7 @@ import {
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 interface Match {
   _id: string;
@@ -49,7 +50,7 @@ export const MatchesPage: React.FC = () => {
       if (Array.isArray(response.data)) {
         setMatches(response.data);
       } else if (response.data?.message) {
-        toast.error(response.data.message)
+        // toast.success(response.data.message)
         setMessage(response.data.message)
         setMatches([]);
       }
@@ -143,11 +144,23 @@ export const MatchesPage: React.FC = () => {
         {
           message && (
             <div className='flex flex-col items-center gap-5 '>
+              <p className="text-2xl font-bold text-red-600 animate-pulse flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856C19.07 19 20 17.95 20 16.714V7.286C20 6.05 19.07 5 17.918 5H6.082C4.93 5 4 6.05 4 7.286v9.428C4 17.95 4.93 19 6.082 19z" />
+                </svg>
+                You have an incomplete profile
+              </p>
               <span className="text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient">
                 {message}
               </span>
 
-              <button className='text-white rounded-md p-4 bg-gradient-to-r from-purple-600 to-blue-600 w-max hover::bg-purple-700 '>Edit Profile?</button>
+              <Link to='/profile/edit' className='text-white cursor-pointer rounded-md p-4 bg-gradient-to-r from-purple-600 to-blue-600 w-max hover::bg-purple-700 '>Edit Profile?</Link>
             </div>
           )
         }
