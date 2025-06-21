@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  MapPin, 
-  Calendar, 
-  Github, 
-  Linkedin, 
-  Globe, 
+import {
+  MapPin,
+  Calendar,
+  Github,
+  Linkedin,
+  Globe,
   UserPlus,
   ArrowLeft,
   Clock,
@@ -18,12 +18,13 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useAuth } from '../Contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-
+import { VerifiedBadge } from '../components/VerifiedBadge ';
 interface PublicProfile {
   _id: string;
   name: string;
   bio: string;
   skills: string[];
+  isVerified: boolean;
   interests: string[];
   github: string;
   linkedin: string;
@@ -34,7 +35,7 @@ interface PublicProfile {
   experience: string;
   lookingFor: string[];
   profileViews: number;
-  connections:string[];
+  connections: string[];
   createdAt: string;
   lastSeen: string;
   profilePicture?: string;
@@ -75,11 +76,11 @@ export const PublicProfilePage: React.FC = () => {
     try {
       const response = await axios.get('/connections');
       const { connections, sentRequests } = response.data;
-      
+
       // Check if the profile owner is in connections
       const isConnected = connections.some((conn: any) => conn.user._id === id);
       setIsConnected(isConnected);
-      
+
       // Check if a request has been sent
       const hasSentRequest = sentRequests.some((req: any) => req._id === id);
       setSentRequest(hasSentRequest);
@@ -147,7 +148,7 @@ export const PublicProfilePage: React.FC = () => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) return 'Active now';
     if (diffInHours < 24) return `Active ${diffInHours}h ago`;
     const diffInDays = Math.floor(diffInHours / 24);
@@ -180,7 +181,7 @@ export const PublicProfilePage: React.FC = () => {
           transition={{ delay: 0.1 }}
           className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8"
         >
-         <div 
+          <div
             className="h-32 relative"
             style={{
               backgroundImage: profile.backgroundPicture ? `url(${profile.backgroundPicture})` : undefined,
@@ -193,13 +194,13 @@ export const PublicProfilePage: React.FC = () => {
             )}
             <div className="absolute inset-0 bg-black/30" />
           </div>
-          
+
           <div className="relative px-8 pb-8">
             <div className={`flex flex-col sm:flex-row items-start sm:items-end space-y-4 sm:space-y-0 sm:space-x-6 -mt-8`}>
               <div className={`w-32 h-32 ${profile.profilePicture ? 'bg-white/20' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-2xl shadow-lg flex items-center justify-center border-4 border-white overflow-hidden`}>
                 {profile.profilePicture ? (
-                  <img 
-                    src={profile.profilePicture} 
+                  <img
+                    src={profile.profilePicture}
                     alt={profile.name}
                     className="w-full h-full object-cover"
                   />
@@ -214,9 +215,18 @@ export const PublicProfilePage: React.FC = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                      {profile.name}
-                    </h1>
+                    <div className='flex  items-center justify-center gap-2 mb-3 '>
+                      <h1 className="text-2xl font-bold text-gray-900 cursor-default ">
+                        {profile.name}
+                      </h1>
+                      <h1 className='mt-1 '>
+                        {profile.isVerified ?
+                          (<VerifiedBadge />)
+                          :
+                          (<p className='text-gray-400 italic cursor-default'>(not verified)</p>)}
+                      </h1>
+                    </div>
+
                     <div className="flex flex-wrap items-center gap-4 text-gray-600 mb-4">
                       {profile.country && (
                         <div className="flex items-center space-x-1">
@@ -224,9 +234,11 @@ export const PublicProfilePage: React.FC = () => {
                           <span>{profile.city ? `${profile.city}, ` : ''}{profile.country}</span>
                         </div>
                       )}
-                      <div className="flex items-center space-x-1">
+                      <div className="flex items-center space-x-1 ">
+                        
                         <Calendar className="w-4 h-4" />
-                        <span>Joined {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                        <span className=''>Joined {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                        
                       </div>
                       <div className="flex items-center space-x-1">
                         <Clock className="w-4 h-4" />
@@ -359,8 +371,8 @@ export const PublicProfilePage: React.FC = () => {
                     <span className="text-gray-600">Profile Views</span>
                   </div>
                   <span className="font-semibold text-gray-900">{profile.profileViews}</span>
-                  
-                  
+
+
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -368,8 +380,8 @@ export const PublicProfilePage: React.FC = () => {
                     <span className="text-gray-600">Connections</span>
                   </div>
                   <span className="font-semibold text-gray-900">{profile.connections.length}</span>
-                  
-                  
+
+
                 </div>
               </div>
             </motion.div>
@@ -415,7 +427,7 @@ export const PublicProfilePage: React.FC = () => {
             </motion.div>
 
             {/* Links */}
-            {(profile.github || profile.linkedin || profile.website)  ? (
+            {(profile.github || profile.linkedin || profile.website) ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -459,9 +471,9 @@ export const PublicProfilePage: React.FC = () => {
                   )}
                 </div>
               </motion.div>
-            ):(
-              <motion.div 
-              initial={{ opacity: 0, y: 20 }}
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
                 className="bg-white rounded-2xl shadow-lg p-6"

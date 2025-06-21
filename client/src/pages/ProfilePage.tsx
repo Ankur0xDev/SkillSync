@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Edit3, 
-  Github, 
-  Linkedin, 
-  Globe, 
+import {
+  Edit3,
+  Github,
+  Linkedin,
+  Globe,
   Eye,
   Users,
 
@@ -17,7 +17,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { SocialStats } from '../components/SocialStats';
 import type { User } from '../types';
-
+import { VerifiedBadge } from '../components/VerifiedBadge ';
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ export const ProfilePage: React.FC = () => {
         }
 
         const targetId = userId || user?._id;
-        
+
         if (!targetId) {
           setError('No user ID provided');
           setLoading(false);
@@ -109,8 +109,8 @@ export const ProfilePage: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="text-red-500 dark:text-red-400">
           {error || 'Profile not found'}
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="ml-4 text-primary-600 hover:text-primary-700"
           >
             Retry
@@ -143,7 +143,7 @@ export const ProfilePage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8"
         >
-          <div 
+          <div
             className="h-36 bg-gradient-to-r from-purple-600 to-blue-600 relative"
             style={{
               backgroundImage: profile.backgroundPicture ? `url(${profile.backgroundPicture})` : undefined,
@@ -159,8 +159,8 @@ export const ProfilePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-start space-y-2 sm:space-y-0 sm:space-x-6 mt-8">
               <div className={`w-32 h-32 ${profile.profilePicture ? 'bg-white' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-2xl shadow-lg flex items-center justify-center border-4 border-white overflow-hidden`}>
                 {profile.profilePicture ? (
-                  <img 
-                    src={profile.profilePicture} 
+                  <img
+                    src={profile.profilePicture}
                     alt={profile.name || profile.username}
                     className="w-full h-full object-cover"
                   />
@@ -173,9 +173,17 @@ export const ProfilePage: React.FC = () => {
               <div className="flex-1 min-w-0 ">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900 ">
-                      {profile.name || profile.username}
-                    </h1>
+                    <div className='flex  items-center justify-center gap-2'>
+                      <h1 className="text-2xl font-bold text-gray-900 cursor-default ">
+                        {profile.name || profile.username}
+                      </h1>
+                      <h1 className='mt-1 '>
+                        {profile.isVerified ?
+                          (<VerifiedBadge />)
+                          :
+                          (<p className='text-gray-400 italic cursor-default'>(not verified)</p>)}
+                      </h1>
+                    </div>
                     <p className="text-gray-600 dark:text-gray-400 mt-1">
                       {profile.bio || 'No bio available'}
                     </p>
@@ -369,8 +377,8 @@ export const ProfilePage: React.FC = () => {
                   )}
                 </div>
               </motion.div>
-            ):(
-              <motion.div  
+            ) : (
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -392,7 +400,7 @@ export const ProfilePage: React.FC = () => {
             <AlertTriangle className="w-5 h-5" />
             <h2 className="text-xl font-semibold">Danger Zone</h2>
           </div>
-          
+
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
@@ -419,11 +427,11 @@ export const ProfilePage: React.FC = () => {
                 <AlertTriangle className="w-5 h-5" />
                 <h3 className="text-xl font-semibold">Delete Account</h3>
               </div>
-              
+
               <p className="text-gray-600 mb-6">
                 Are you sure you want to delete your account? This will:
               </p>
-              
+
               <ul className="list-disc list-inside text-gray-600 mb-6 space-y-2">
                 <li>Permanently delete your profile and all associated data</li>
                 <li>Remove all your connections and pending requests</li>
