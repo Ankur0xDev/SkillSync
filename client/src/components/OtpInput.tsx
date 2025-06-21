@@ -31,7 +31,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({ value, onChange, length = 6 
       {Array.from({ length }).map((_, idx) => (
         <input
           key={idx}
-          ref={el => (inputs.current[idx] = el)}
+          ref={el => { inputs.current[idx] = el; }}
           type="text"
           inputMode="numeric"
           maxLength={1}

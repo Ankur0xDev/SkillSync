@@ -24,9 +24,7 @@ export const AuthPage: React.FC = () => {
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
-  const [pendingPassword, setPendingPassword] = useState('');
-  const [pendingName, setPendingName] = useState('');
-
+  
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -51,8 +49,6 @@ export const AuthPage: React.FC = () => {
         toast.success(res.data.message || 'OTP sent to your email');
         setShowOtp(true);
         setPendingEmail(formData.email);
-        setPendingPassword(formData.password);
-        setPendingName(formData.name);
       } else {
         await login(formData.email, formData.password);
       }
