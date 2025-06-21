@@ -299,8 +299,13 @@ router.put('/profile', auth, [
 router.get('/matches/suggestions', auth, async (req, res) => {
   try {
     const currentUser = await User.findById(req.user._id);
-    
-    // Get users that are not connected and not in pending requests
+
+    // Flag for incomplete profile
+    const incompleteProfile =
+      !currentUser.skills || currentUser.skills.length === 0 ||
+      !currentUser.interests || currentUser.interests.length === 0 ||
+      !currentUser.lookingFor || currentUser.lookingFor.length === 0;
+
     const excludeIds = [
       req.user._id,
       ...currentUser.connections.map(conn => conn.user),
@@ -308,7 +313,6 @@ router.get('/matches/suggestions', auth, async (req, res) => {
       ...currentUser.receivedRequests
     ];
 
-    // Find potential matches based on skills, interests, or looking for similar things
     const matches = await User.aggregate([
       {
         $match: {
@@ -354,12 +358,21 @@ router.get('/matches/suggestions', auth, async (req, res) => {
       }
     ]);
 
+    // Respond with matches and optionally a message
+    if (incompleteProfile) {
+      return res.json({
+        message: 'Add more skills, interests, or what you’re looking for to improve your match results.',
+        matches
+      });
+    }
+
     res.json(matches);
   } catch (error) {
     console.error('Get matches error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 // Get user stats
 router.get('/stats/overview', auth, async (req, res) => {

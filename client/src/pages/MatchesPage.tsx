@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Heart, 
-  X, 
-  MapPin, 
-  Clock, 
-  Star, 
+import {
+  Heart,
+  X,
+  MapPin,
+  Clock,
+  Star,
   RefreshCw,
   Users,
   Sparkles
@@ -36,6 +36,7 @@ export const MatchesPage: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [message, setMessage] = useState<string | null>(null)
   const [sendingRequest, setSendingRequest] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,7 +46,13 @@ export const MatchesPage: React.FC = () => {
   const fetchMatches = async () => {
     try {
       const response = await axios.get('/users/matches/suggestions');
-      setMatches(response.data);
+      if (Array.isArray(response.data)) {
+        setMatches(response.data);
+      } else if (response.data?.message) {
+        toast.error(response.data.message)
+        setMessage(response.data.message)
+        setMatches([]);
+      }
     } catch (error) {
       console.error('Error fetching matches:', error);
       toast.error('Failed to load matches');
@@ -115,7 +122,7 @@ export const MatchesPage: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-[15vh]"
         >
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Sparkles className="w-8 h-8 text-purple-600" />
@@ -133,6 +140,17 @@ export const MatchesPage: React.FC = () => {
             <span>{refreshing ? 'Refreshing...' : 'Refresh Matches'}</span>
           </button>
         </motion.div>
+        {
+          message && (
+            <div className='flex flex-col items-center gap-5 '>
+              <span className="text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient">
+                {message}
+              </span>
+
+              <button className='text-white rounded-md p-4 bg-gradient-to-r from-purple-600 to-blue-600 w-max hover::bg-purple-700 '>Edit Profile?</button>
+            </div>
+          )
+        }
 
         {matches.length === 0 ? (
           <motion.div
@@ -143,7 +161,7 @@ export const MatchesPage: React.FC = () => {
             <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-4">No matches found</h2>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              We couldn't find any matches right now. Try updating your profile with more skills and interests, 
+              We couldn't find any matches right now. Try updating your profile with more skills and interests,
               or check back later for new members!
             </p>
             <button
@@ -163,10 +181,10 @@ export const MatchesPage: React.FC = () => {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 className="bg-white rounded-xl shadow-lg overflow-hidden"
               >
-                <div 
+                <div
                   className="p-6 text-white relative"
                   style={{
-                    backgroundImage: match.backgroundPicture 
+                    backgroundImage: match.backgroundPicture
                       ? `linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${match.backgroundPicture})`
                       : 'linear-gradient(to right, #9333ea, #2563eb)',
                     backgroundSize: 'cover',
@@ -234,7 +252,7 @@ export const MatchesPage: React.FC = () => {
                       </span>
                     </div>
                   </div>
- 
+
                   {/* Skills */}
                   {match.skills.length > 0 && (
                     <div className="mb-4">
