@@ -2,6 +2,9 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import User from '../models/user.js';
+// import PendingUser from '../models/PendingUser.js';
+// import bcrypt from 'bcrypt';
+// import nodemailer from 'nodemailer';
 import { auth } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -34,42 +37,103 @@ const getUserData = (user) => ({
   profileViews: user.profileViews,
   lastSeen: user.lastSeen
 });
-
 // Register
+import PendingUser from '../models/PendingUser.js';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+
 router.post('/register', [
   body('name')
-  .trim()
-  .isLength({ min: 3, max: 100 }).withMessage('Name must be between 3-100 characters')
-  .custom(value => {
-    const cleaned = value.replace(/\s/g, '');
-    if (cleaned.length < 3) {
-      throw new Error('Name must have at least 3 non-space characters');
-    }
-    return true;
-  })
-,
+    .trim()
+    .isLength({ min: 3, max: 100 }).withMessage('Name must be between 3-100 characters')
+    .custom(value => {
+      const cleaned = value.replace(/\s/g, '');
+      if (cleaned.length < 3) {
+        throw new Error('Name must have at least 3 non-space characters');
+      }
+      return true;
+    }),
   body('email').isEmail().normalizeEmail().withMessage('Please enter a valid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: errors.array()[0],  errors: errors.array() });
+      return res.status(400).json({ message: errors.array()[0], errors: errors.array() });
     }
 
     const { name, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists with this email' });
+    const existingPending = await PendingUser.findOne({ email });
+
+    if (existingUser || existingPending) {
+      return res.status(400).json({ message: 'A user already exists with this email or pending verification' });
     }
 
-    // Create new user
-    const user = new User({ name, email, password });
-    await user.save();
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const otp = generateOTP();
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
 
-    // Generate token
+    const pendingUser = new PendingUser({ name, email, password: hashedPassword, otp, otpExpiresAt });
+    await pendingUser.save();
+
+    // Send OTP via email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: email,
+      subject: 'Your SkillSync OTP Verification',
+      text: `Your OTP is ${otp}. It expires in 10 minutes.`
+    });
+
+    res.status(200).json({ message: 'OTP sent to your email. Please verify to complete registration.' });
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Server error during registration' });
+  }
+});
+
+router.post('/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const pendingUser = await PendingUser.findOne({ email });
+
+    if (!pendingUser) {
+      return res.status(404).json({ message: 'No pending registration found' });
+    }
+
+    if (pendingUser.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    if (pendingUser.otpExpiresAt < new Date()) {
+      await PendingUser.deleteOne({ email });
+      return res.status(400).json({ message: 'OTP expired. Please register again.' });
+    }
+
+    // Create real user
+    const user = new User({
+      name: pendingUser.name,
+      email: pendingUser.email,
+      password: pendingUser.password
+    });
+
+    await user.save();
+    await PendingUser.deleteOne({ email });
+
     const token = generateToken(user._id);
 
     res.status(201).json({
@@ -77,11 +141,14 @@ router.post('/register', [
       token,
       user: getUserData(user)
     });
+
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error during registration' });
+    console.error('OTP verification error:', error);
+    res.status(500).json({ message: 'Server error during OTP verification' });
   }
 });
+
+
 
 // Login
 router.post('/login', [
