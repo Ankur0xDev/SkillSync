@@ -5,8 +5,12 @@ import { Mail, Lock, User, Eye, EyeOff, Code2 } from 'lucide-react';
 import { useAuth } from '../Contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
+import axios from 'axios';
+import { OtpInput } from '../components/OtpInput';
+import { useNavigate } from 'react-router-dom';
 export const AuthPage: React.FC = () => {
-  const { login, register, isAuthenticated, loading } = useAuth();
+  const navigate=useNavigate();
+  const { login, isAuthenticated, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -15,6 +19,13 @@ export const AuthPage: React.FC = () => {
     password: ''
   });
   const [formLoading, setFormLoading] = useState(false);
+
+  // OTP state
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [pendingPassword, setPendingPassword] = useState('');
+  const [pendingName, setPendingName] = useState('');
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
@@ -25,17 +36,60 @@ export const AuthPage: React.FC = () => {
     setFormLoading(true);
 
     try {
-      if(!formData.name ){
-        toast.error('Name is required')
-      }
-      if (isLogin) {
-        await login(formData.email, formData.password);
+      if (!isLogin) {
+        if (!formData.name) {
+          toast.error('Name is required');
+          setFormLoading(false);
+          return;
+        }
+        // Register: send details, expect OTP step
+        const res = await axios.post('/auth/register', {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
+        });
+        toast.success(res.data.message || 'OTP sent to your email');
+        setShowOtp(true);
+        setPendingEmail(formData.email);
+        setPendingPassword(formData.password);
+        setPendingName(formData.name);
       } else {
-        await register(formData.name, formData.email, formData.password);
+        await login(formData.email, formData.password);
       }
-    } catch (error) {
-      console.log(error)
-      // Error is handled in the auth context
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        'Registration/Login failed'
+      );
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otp.length !== 6) {
+      toast.error('Please enter the 6-digit OTP');
+      return;
+    }
+    setFormLoading(true);
+    try {
+      const res = await axios.post('/auth/verify-otp', {
+        email: pendingEmail,
+        otp
+      });
+      toast.success(res.data.message || 'Registration complete!');
+      // Now log in the user automatically
+      
+      navigate('/profile')
+      // await login(pendingEmail, pendingPassword);
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        'OTP verification failed'
+      );
     } finally {
       setFormLoading(false);
     }
@@ -82,138 +136,161 @@ export const AuthPage: React.FC = () => {
               {isLogin ? 'Welcome Back' : 'Join SkillSync'}
             </h2>
             <p className="text-gray-300">
-              {isLogin 
-                ? 'Connect with your coding community' 
+              {isLogin
+                ? 'Connect with your coding community'
                 : 'Find your perfect coding partner'
               }
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {!isLogin && (
+          {/* OTP Form */}
+          {showOtp ? (
+            <form onSubmit={handleOtpSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="sr-only">
-                  Full Name
+                <label className="block text-white text-center mb-2">
+                  Enter the 6-digit OTP sent to your email
+                </label>
+                <OtpInput value={otp} onChange={setOtp} length={6} />
+              </div>
+              <button
+                type="submit"
+                disabled={formLoading}
+                className="group relative cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                {formLoading ? (
+                  <LoadingSpinner size="sm" className="text-white" />
+                ) : (
+                  <span>Verify OTP</span>
+                )}
+              </button>
+            </form>
+          ) : (
+            // Main Auth Form
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {!isLogin && (
+                <div>
+                  <label htmlFor="name" className="sr-only">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required={!isLogin}
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300/30 placeholder-gray-400 text-white rounded-xl bg-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:z-10"
+                      placeholder="Full Name"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="email" className="sr-only">
+                  Email address
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400" />
+                    <Mail className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required={!isLogin}
-                    value={formData.name}
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={formData.email}
                     onChange={handleInputChange}
                     className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300/30 placeholder-gray-400 text-white rounded-xl bg-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:z-10"
-                    placeholder="Full Name"
+                    placeholder="Email address"
                   />
                 </div>
               </div>
-            )}
 
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+              <div>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="appearance-none relative block w-full pl-10 pr-10 py-3 border border-gray-300/30 placeholder-gray-400 text-white rounded-xl bg-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:z-10"
+                    placeholder="Password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-300" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-300" />
+                    )}
+                  </button>
                 </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300/30 placeholder-gray-400 text-white rounded-xl bg-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:z-10"
-                  placeholder="Email address"
-                />
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="appearance-none relative block w-full pl-10 pr-10 py-3 border border-gray-300/30 placeholder-gray-400 text-white rounded-xl bg-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:z-10"
-                  placeholder="Password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-300" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-300" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={formLoading}
-              className="group relative cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              {formLoading ? (
-                <LoadingSpinner size="sm" className="text-white" />
-              ) : (
-                <span >{isLogin ? 'Sign In' : 'Create Account'}</span>
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={formLoading}
+                className="group relative cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                {formLoading ? (
+                  <LoadingSpinner size="sm" className="text-white" />
+                ) : (
+                  <span >{isLogin ? 'Sign In' : 'Create Account'}</span>
+                )}
+              </button>
+            </form>
+          )}
 
           {/* Toggle */}
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-gray-300 hover:text-white transition-colors"
-            >
-              {isLogin ? (
-                <>
-                  Don't have an account?{' '}
-                  <span className="font-medium cursor-pointer text-purple-400 hover:text-purple-300">
-                    Sign up
-                  </span>
-                </>
-              ) : (
-                <>
-                  Already have an account?{' '}
-                  <span className="font-medium text-purple-400 hover:text-purple-300">
-                    Sign in
-                  </span>
-                </>
-              )}
-            </button>
-          </div>
+          {!showOtp && (
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                {isLogin ? (
+                  <>
+                    Don't have an account?{' '}
+                    <span className="font-medium cursor-pointer text-purple-400 hover:text-purple-300">
+                      Sign up
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Already have an account?{' '}
+                    <span className="font-medium text-purple-400 hover:text-purple-300">
+                      Sign in
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
-        {/* Features  helly yeah*/}
+        {/* Features */}
         <div className="text-center text-gray-300 space-y-2">
           <p className="text-sm">✨ Smart matching algorithm</p>
           <p className="text-sm">🌍 Global developer community</p>
-          
         </div>
       </motion.div>
     </div>
   );
-}; 
-
+};
