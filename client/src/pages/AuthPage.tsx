@@ -9,8 +9,8 @@ import axios from 'axios';
 import { OtpInput } from '../components/OtpInput';
 import { useNavigate } from 'react-router-dom';
 export const AuthPage: React.FC = () => {
-  const navigate=useNavigate();
-  const { login, isAuthenticated, loading,verifyOtp } = useAuth();
+  const navigate = useNavigate();
+  const { login, isAuthenticated, loading, verifyOtp } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -58,10 +58,13 @@ export const AuthPage: React.FC = () => {
       }
     } catch (error: any) {
       toast.error(
-        error.response?.data?.message ||
-        error.response?.data?.errors?.[0]?.msg ||
-        'Registration/Login failed'
+        typeof error.response?.data?.message === 'string'
+          ? error.response.data.message
+          : Array.isArray(error.response?.data?.errors)
+            ? error.response.data.errors.map((e: any) => e.msg).join(', ')
+            : 'Registration/Login failed'
       );
+
     } finally {
       setFormLoading(false);
     }
@@ -70,16 +73,16 @@ export const AuthPage: React.FC = () => {
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.length !== 6) {
-        toast.error('Please enter the 6-digit OTP');
-        return;
+      toast.error('Please enter the 6-digit OTP');
+      return;
     }
     setFormLoading(true);
     const success = await verifyOtp(pendingEmail, otp);
     setFormLoading(false);
     if (success) {
-        navigate('/profile');
+      navigate('/profile');
     }
-};
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
