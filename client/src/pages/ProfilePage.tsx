@@ -394,69 +394,9 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Danger Zone */}
-        <div className="mt-12 bg-white rounded-xl shadow-sm p-6 border border-red-100">
-          <div className="flex items-center space-x-2 text-red-600 mb-4">
-            <AlertTriangle className="w-5 h-5" />
-            <h2 className="text-xl font-semibold">Danger Zone</h2>
-          </div>
+      
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-medium text-gray-900">Delete Account</h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  Permanently delete your account and all associated data. This action cannot be undone.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Delete Account
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Delete Confirmation Modal */}
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl p-6 max-w-md w-full">
-              <div className="flex items-center space-x-2 text-red-600 mb-4">
-                <AlertTriangle className="w-5 h-5" />
-                <h3 className="text-xl font-semibold">Delete Account</h3>
-              </div>
-
-              <p className="text-gray-600 mb-6">
-                Are you sure you want to delete your account? This will:
-              </p>
-
-              <ul className="list-disc list-inside text-gray-600 mb-6 space-y-2">
-                <li>Permanently delete your profile and all associated data</li>
-                <li>Remove all your connections and pending requests</li>
-                <li>Delete your profile and background pictures</li>
-                <li>This action cannot be undone</li>
-              </ul>
-
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteAccount}
-                  disabled={deleteLoading}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {deleteLoading ? 'Deleting...' : 'Yes, Delete Account'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        
       </div>
     </div>
   );
