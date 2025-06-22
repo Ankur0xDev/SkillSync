@@ -167,6 +167,34 @@ router.get('/', optionalAuth, async (req, res) => {
       query._id = { $ne: req.user._id };
     }
 
+    // Apply privacy settings filter
+    if (req.user) {
+      // If user is authenticated, respect privacy settings
+      const currentUser = await User.findById(req.user._id);
+      const userConnectionIds = currentUser.connections.map(conn => conn.user.toString());
+      
+      query.$or = [
+        // Public profiles (including users without privacySettings)
+        { 
+          $or: [
+            { 'privacySettings.profileVisibility': 'public' },
+            { 'privacySettings.profileVisibility': { $exists: false } }
+          ]
+        },
+        // Connections only - user must be connected
+        {
+          'privacySettings.profileVisibility': 'connections',
+          _id: { $in: userConnectionIds }
+        }
+      ];
+    } else {
+      // If not authenticated, only show public profiles (including users without privacySettings)
+      query.$or = [
+        { 'privacySettings.profileVisibility': 'public' },
+        { 'privacySettings.profileVisibility': { $exists: false } }
+      ];
+    }
+
     // Text search
     if (search) {
       query.$text = { $search: search };
@@ -240,6 +268,38 @@ router.get('/:id', optionalAuth, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Check privacy settings
+    if (req.user) {
+      // User is authenticated
+      if (req.user._id.toString() === req.params.id) {
+        // User viewing their own profile - allow access
+      } else {
+        // Check privacy settings
+        const currentUser = await User.findById(req.user._id);
+        const userConnectionIds = currentUser.connections.map(conn => conn.user.toString());
+        
+        // If user has privacy settings and they're private, block access
+        if (user.privacySettings?.profileVisibility === 'private') {
+          return res.status(403).json({ message: 'This profile is private and cannot be viewed' });
+        }
+        
+        // If user has privacy settings and they're connections-only, check connection
+        if (user.privacySettings?.profileVisibility === 'connections' && 
+            !userConnectionIds.includes(req.params.id)) {
+          return res.status(403).json({ message: 'This profile is only visible to connections' });
+        }
+        
+        // If user doesn't have privacy settings, treat as public (allow access)
+      }
+    } else {
+      // User is not authenticated - only allow public profiles or users without privacy settings
+      if (user.privacySettings?.profileVisibility === 'private' || 
+          user.privacySettings?.profileVisibility === 'connections') {
+        return res.status(403).json({ message: 'This profile is not publicly visible' });
+      }
+      // If user doesn't have privacy settings, treat as public (allow access)
+    }
+
     // Increment profile views (but not for the user's own profile)
     if (req.user && req.user._id.toString() !== req.params.id) {
       await User.findByIdAndUpdate(req.params.id, { $inc: { profileViews: 1 } });
@@ -296,6 +356,44 @@ router.put('/profile', auth, [
   }
 });
 
+// Update privacy settings
+router.put('/privacy-settings', auth, [
+  body('profileVisibility').optional().isIn(['public', 'connections', 'private']),
+  body('showOnlineStatus').optional().isBoolean()
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+
+    const { profileVisibility, showOnlineStatus } = req.body;
+    const updates = {};
+
+    if (profileVisibility !== undefined) {
+      updates['privacySettings.profileVisibility'] = profileVisibility;
+    }
+
+    if (showOnlineStatus !== undefined) {
+      updates['privacySettings.showOnlineStatus'] = showOnlineStatus;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      updates,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json({ 
+      message: 'Privacy settings updated successfully', 
+      privacySettings: user.privacySettings 
+    });
+  } catch (error) {
+    console.error('Update privacy settings error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Get user matches/suggestions
 router.get('/matches/suggestions', auth, async (req, res) => {
   try {
@@ -314,6 +412,9 @@ router.get('/matches/suggestions', auth, async (req, res) => {
       ...currentUser.receivedRequests
     ];
 
+    // Get user's connection IDs for privacy filtering
+    const userConnectionIds = currentUser.connections.map(conn => conn.user.toString());
+
     const matches = await User.aggregate([
       {
         $match: {
@@ -323,6 +424,21 @@ router.get('/matches/suggestions', auth, async (req, res) => {
             { skills: { $in: currentUser.skills } },
             { interests: { $in: currentUser.interests } },
             { lookingFor: { $in: currentUser.lookingFor } }
+          ],
+          // Apply privacy settings filter
+          $or: [
+            // Public profiles (including users without privacySettings)
+            { 
+              $or: [
+                { 'privacySettings.profileVisibility': 'public' },
+                { 'privacySettings.profileVisibility': { $exists: false } }
+              ]
+            },
+            // Connections only - user must be connected
+            {
+              'privacySettings.profileVisibility': 'connections',
+              _id: { $in: userConnectionIds }
+            }
           ]
         }
       },
@@ -354,7 +470,8 @@ router.get('/matches/suggestions', auth, async (req, res) => {
           availability: 1,
           experience: 1,
           lastSeen: 1,
-          matchScore: 1
+          matchScore: 1,
+          privacySettings: 1
         }
       }
     ]);

@@ -18,6 +18,9 @@ import toast from 'react-hot-toast';
 import { SocialStats } from '../components/SocialStats';
 import type { User } from '../types';
 import { VerifiedBadge } from '../components/VerifiedBadge ';
+import { PrivateProfile } from '../components/PrivateProfile';
+import { ConnectionsOnlyProfile } from '../components/ConnectionsOnlyProfile';
+
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -27,6 +30,8 @@ export const ProfilePage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPrivateProfile, setIsPrivateProfile] = useState(false);
+  const [isConnectionsOnlyProfile, setIsConnectionsOnlyProfile] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -59,6 +64,12 @@ export const ProfilePage: React.FC = () => {
         if (err.response?.status === 401) {
           // If unauthorized, redirect to login
           navigate('/auth');
+        } else if (err.response?.status === 403 && err.response?.data?.message?.includes('private')) {
+          // If profile is private, show private profile component
+          setIsPrivateProfile(true);
+        } else if (err.response?.status === 403 && err.response?.data?.message?.includes('connections')) {
+          // If profile is connections-only, show connections-only profile component
+          setIsConnectionsOnlyProfile(true);
         } else {
           setError(err.response?.data?.message || 'Failed to load profile');
         }
@@ -102,6 +113,14 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  if (isPrivateProfile) {
+    return <PrivateProfile />;
+  }
+
+  if (isConnectionsOnlyProfile) {
+    return <ConnectionsOnlyProfile />;
   }
 
   if (error || !profile) {

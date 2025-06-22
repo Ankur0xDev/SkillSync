@@ -24,4 +24,8 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   github?: string;
+  privacySettings?: {
+    profileVisibility: 'public' | 'connections' | 'private';
+    showOnlineStatus: boolean;
+  };
 } 

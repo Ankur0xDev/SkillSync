@@ -178,6 +178,18 @@ const userSchema = new mongoose.Schema({
       type: Boolean,
       default: true
     }
+  },
+  // Privacy settings
+  privacySettings: {
+    profileVisibility: {
+      type: String,
+      enum: ['public', 'connections', 'private'],
+      default: 'public'
+    },
+    showOnlineStatus: {
+      type: Boolean,
+      default: true
+    }
   }
 }, {
   timestamps: true

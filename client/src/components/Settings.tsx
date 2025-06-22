@@ -51,6 +51,10 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const [showDeletionOtp, setShowDeletionOtp] = useState(false);
   const [deletionOtp, setDeletionOtp] = useState('');
   const [deletionStep, setDeletionStep] = useState<'initial' | 'otp-sent' | 'confirming'>('initial');
+  const [privacySettings, setPrivacySettings] = useState({
+    profileVisibility: user?.privacySettings?.profileVisibility || 'public',
+    showOnlineStatus: user?.privacySettings?.showOnlineStatus ?? true
+  });
 
   const [passwordData, setPasswordData] = useState<ChangePasswordData>({
     currentPassword: '',
@@ -127,6 +131,14 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     }
   };
 
+  const handleChangeEmail=async()=>{
+    if(!user?.isVerified){
+      toast.error('Please verify your email first');
+      return;
+    }
+    // setShowChangeEmail(true);
+  }
+
   const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -201,6 +213,19 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     setShowDeletionOtp(false);
   };
 
+  const handlePrivacySettingsUpdate = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.put('/users/privacy-settings', privacySettings);
+      updateUser({ ...user, privacySettings: response.data.privacySettings });
+      toast.success('Privacy settings updated successfully');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to update privacy settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderAccountTab = () => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -260,7 +285,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 }
               </p>
             </div>
-            {!user?.isVerified && (
+            {!user?.isVerified ?  (
               <button
                 onClick={handleSendVerificationEmail}
                 disabled={loading}
@@ -268,6 +293,15 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
               >
                 {loading ? <LoadingSpinner size="sm" /> : 'Verify Email'}
               </button>
+            ):(
+              <button
+                onClick={handleSendVerificationEmail}
+                disabled={loading}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm"
+              >
+                {loading ? <LoadingSpinner size="sm" /> : 'Change Email'}
+              </button>
+
             )}
           </div>
           
@@ -514,7 +548,14 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
               <h4 className="font-medium text-gray-900">Profile Visibility</h4>
               <p className="text-sm text-gray-500">Control who can see your profile</p>
             </div>
-            <select className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            <select 
+              value={privacySettings.profileVisibility}
+              onChange={(e) => setPrivacySettings(prev => ({
+                ...prev,
+                profileVisibility: e.target.value as 'public' | 'connections' | 'private'
+              }))}
+              className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            >
               <option value="public">Public</option>
               <option value="connections">Connections Only</option>
               <option value="private">Private</option>
@@ -527,9 +568,27 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
               <p className="text-sm text-gray-500">Let others see when you're online</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <input 
+                type="checkbox" 
+                className="sr-only peer" 
+                checked={privacySettings.showOnlineStatus}
+                onChange={(e) => setPrivacySettings(prev => ({
+                  ...prev,
+                  showOnlineStatus: e.target.checked
+                }))}
+              />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
+          </div>
+
+          <div className="pt-4 border-t">
+            <button
+              onClick={handlePrivacySettingsUpdate}
+              disabled={loading}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm"
+            >
+              {loading ? <LoadingSpinner size="sm" /> : 'Save Privacy Settings'}
+            </button>
           </div>
         </div>
       </div>
