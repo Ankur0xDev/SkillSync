@@ -278,4 +278,5 @@ export const AuthPage: React.FC = () => {
       </motion.div>
     </div>
   );
-};
+}; 
+ 

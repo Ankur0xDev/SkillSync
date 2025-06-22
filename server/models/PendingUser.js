@@ -2,10 +2,19 @@
 import mongoose from 'mongoose';
 
 const pendingUserSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  password: String, // store hashed password
-  otp: String,
+  name:{
+    type:String,
+    default:null
+  } ,
+  email: { type: String, unique: true,required:true },
+  password:{
+    type:String, // store hashed password
+    default:null
+  } ,
+  otp: {
+    type:String,
+    required:true
+  },
   otpExpiresAt: Date
 });
 

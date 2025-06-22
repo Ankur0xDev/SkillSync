@@ -1,13 +1,14 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 import User from '../models/user.js';
+import PendingUser from '../models/PendingUser.js'
 import { auth, optionalAuth } from '../middleware/auth.js';
 import multer from 'multer';
 import cloudinary from '../config/cloudinary.js';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import nodemailer from 'nodemailer';
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -361,7 +362,7 @@ router.get('/matches/suggestions', auth, async (req, res) => {
     // Respond with matches and optionally a message
     if (incompleteProfile) {
       return res.json({
-        message: 'Add more skills, interests, or what you’re looking for to improve your match results.',
+        message: "Add more skills, interests, or what you're looking for to improve your match results.",
         matches
       });
     }
@@ -393,8 +394,8 @@ router.get('/stats/overview', auth, async (req, res) => {
   }
 });
 
-// Delete user account
-router.delete('/account', auth, async (req, res) => {
+// Send account deletion OTP
+router.post('/send-deletion-otp', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     
@@ -402,16 +403,85 @@ router.delete('/account', auth, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Store OTP in user document with expiration
+    user.deletionOtp = otp;
+    user.deletionOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    await user.save();
+
+    // Send email with OTP
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: user.email,
+      subject: 'Confirm Account Deletion - SkillSync',
+      text: `You have requested to delete your SkillSync account.\n\nThis action will permanently delete all your data including:\n- Profile information\n- Connections\n- Projects\n- Messages\n- All uploaded files\n\nIf you want to proceed, use this 6-digit OTP: ${otp}\n\nThis OTP expires in 10 minutes.\n\nIf you didn't request this, please ignore this email and your account will remain safe.`
+    });
+
+    res.json({ 
+      message: 'Account deletion OTP sent successfully. Check your email to confirm deletion.',
+      expiresIn: '10 minutes'
+    });
+  } catch (error) {
+    console.error('Send deletion OTP error:', error);
+    res.status(500).json({ message: 'Server error while sending deletion OTP' });
+  }
+});
+
+// Delete user account with OTP verification
+router.delete('/account', auth, [
+  body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+
+    const { otp } = req.body;
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify OTP
+    if (!user.deletionOtp || user.deletionOtp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Check if OTP has expired
+    if (user.deletionOtpExpiresAt < new Date()) {
+      return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+    }
+
     // Delete profile picture from Cloudinary if exists
     if (user.profilePicture) {
-      const publicId = user.profilePicture.split('/').slice(-1)[0].split('.')[0];
-      await cloudinary.uploader.destroy(publicId);
+      try {
+        const publicId = user.profilePicture.split('/').slice(-1)[0].split('.')[0];
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.error('Error deleting profile picture:', error);
+      }
     }
 
     // Delete background picture from Cloudinary if exists
     if (user.backgroundPicture) {
-      const publicId = user.backgroundPicture.split('/').slice(-1)[0].split('.')[0];
-      await cloudinary.uploader.destroy(publicId);
+      try {
+        const publicId = user.backgroundPicture.split('/').slice(-1)[0].split('.')[0];
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.error('Error deleting background picture:', error);
+      }
     }
 
     // Remove user from other users' connections
@@ -441,5 +511,189 @@ router.delete('/account', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error while deleting account' });
   }
 });
+
+// Change password
+router.put('/change-password', auth, [
+  body('currentPassword').notEmpty().withMessage('Current password is required'),
+  body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters long')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify current password
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ message: 'Server error while changing password' });
+  }
+});
+
+// Send verification email
+router.post('/send-verification-email', auth, [
+  body('email').isEmail().withMessage('Please enter a valid email')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+    const { email } = req.body;
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Check if email is already verified
+    if (user.isVerified) {
+      return res.status(400).json({ message: 'Email is already verified' });
+    }
+
+    // Check if there's already a pending verification for this email
+    const existingPendingUser = await PendingUser.findOne({ email });
+    let otp;
+    
+    if (existingPendingUser) {
+      // Update existing pending user
+      otp = Math.floor(100000 + Math.random() * 900000).toString();
+      existingPendingUser.otp = otp;
+      existingPendingUser.otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      await existingPendingUser.save();
+    } else {
+      // Create new pending user
+      otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const newPendingUser = new PendingUser({
+        email: email,
+        otp: otp,
+        otpExpiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+      });
+      await newPendingUser.save();
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Your skillSync OTP verification",
+      text: `Your OTP is ${otp}. It expires in 10 minutes`,
+    });
+
+    res.json({ 
+      message: 'Verification email sent successfully',
+    });
+  } catch (error) {
+    console.error('Send verification email error:', error);
+    res.status(500).json({ message: 'Server error while sending verification email' });
+  }
+});
+
+// Verify email
+router.post('/verify-email', auth, [
+  body('email').isEmail().withMessage('Please enter a valid email'),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+
+    const { email, otp } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find pending user with the provided email and OTP
+    const pendingUser = await PendingUser.findOne({ email, otp });
+
+    if (!pendingUser) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    if (pendingUser.otpExpiresAt < new Date()) {
+      return res.status(400).json({ message: 'OTP has expired' });
+    }
+
+    // Mark email as verified in the main user document
+    user.isVerified = true;
+    await user.save();
+
+    // Delete the pending user record
+    await PendingUser.findByIdAndDelete(pendingUser._id);
+
+    res.json({ 
+      message: 'Email verified successfully',
+      user: user.getPublicProfile ? user.getPublicProfile() : user
+    });
+  } catch (error) {
+    console.error('Verify email error:', error);
+    res.status(500).json({ message: 'Server error while verifying email' });
+  }
+});
+
+// router.post('/resend-otp',[
+//   body('email').isEmail().withMessage('Please Enter a valid email'),
+// ],async (req,res)=>{
+//   const {email}=req.body;
+//   const pendUser=PendingUser.FindOne({email})
+//   const existingUser=User.findOne({email})
+//     if(!pendUser || !existingUser){
+//       return res.status(400).json({message:'user not found'})
+//     }
+//   if(existingUser.isVerified==='true'){
+//     return res.status.json({message:'User is already verified'})
+//   }
+//   const NewOTP=Math.floor(100000+Math.random()*900000)
+//   if(pendUser){
+//     pendUser.otp=NewOTP;
+//     pendUser.otpExpiresAt=new Date(Date.now()+10*60*1000)
+//     await pendUser.save();
+//   }else{
+//     const newPendingUser=new PendingUser({
+//       email,
+//       otp:NewOTP,
+//     })
+//   }
+//   const transporter=nodemailer.createTransport({
+//     auth:{
+//       user:process.env.EMAIL,
+//       pass:process.env.EMAIL_PASSWORD
+//     }
+//   })
+//   await transporter.sendMail({
+//     from:process.env.EMAIL,
+//     to:email,
+//     subject:"Your skillSync OTP verification",
+//     text:`Your OTP is ${NewOTP}. It expires in 10 minutes`
+//   })
+//     res.json({message:'OTP sent successfully'}) 
+// })
 
 export default router 

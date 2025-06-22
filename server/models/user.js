@@ -27,6 +27,22 @@ const userSchema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
+  verificationOtp: {
+    type: String,
+    default: null
+  },
+  verificationOtpExpiresAt: {
+    type: Date,
+    default: null
+  },
+  deletionOtp: {
+    type: String,
+    default: null
+  },
+  deletionOtpExpiresAt: {
+    type: Date,
+    default: null
+  },
   profilePicture: {
     type: String,
     default: ''

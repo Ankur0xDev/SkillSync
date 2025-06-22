@@ -12,7 +12,8 @@ import {
   Menu, 
   X,
   // Bell,
-  FolderOpen
+  FolderOpen,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '../Contexts/AuthContext';
 
@@ -144,6 +145,14 @@ export const Navbar: React.FC = () => {
                           <LayoutDashboard className="w-4 h-4" />
                           <span>Dashboard</span>
                         </Link>
+                        <Link
+                          to="/settings"
+                          className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                        >
+                          <Settings className="w-4 h-4" />
+                          <span>Settings</span>
+                        </Link>
                         <hr className="my-2" />
                         <button
                           onClick={handleLogout}
@@ -213,6 +222,14 @@ export const Navbar: React.FC = () => {
                       </Link>
                     );
                   })}
+                  <Link
+                    to="/settings"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-purple-600 hover:bg-gray-50"
+                  >
+                    <Settings className="w-5 h-5" />
+                    <span>Settings</span>
+                  </Link>
                   <hr className="my-4" />
                   <button
                     onClick={handleLogout}

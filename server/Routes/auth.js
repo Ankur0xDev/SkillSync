@@ -22,6 +22,7 @@ const getUserData = (user) => ({
   name: user.name,
   email: user.email,
   avatar: user.avatar,
+  isVerified:user.isVerified,
   profilePicture: user.profilePicture,
   backgroundPicture: user.backgroundPicture,
   bio: user.bio,
@@ -253,5 +254,6 @@ router.get("/me", auth, async (req, res) => {
 router.get("/verify", auth, (req, res) => {
   res.json({ valid: true, user: getUserData(req.user) });
 });
+
 
 export default router;

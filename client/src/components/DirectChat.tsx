@@ -36,8 +36,7 @@ const DirectChat: React.FC = () => {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  console.log('DirectChat mounted, userId:', userId);
-
+  // console.log('DirectChat mounted, userId:', userId);
   useEffect(() => {
     const fetchOrCreateChat = async () => {
       setLoading(true);

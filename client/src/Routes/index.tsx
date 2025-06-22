@@ -22,6 +22,7 @@ import { ProjectDetailPage } from '../pages/ProjectDetailPage';
 import { TeamDashboardPage } from '../pages/TeamDashboardPage';
 import CreateProfilePage from '../pages/CreateProfilePage';
 import DirectChat from '../components/DirectChat';
+import { SettingsPage } from '../pages/SettingsPage';
 
 const AppRoutes = () => {
   return (
@@ -88,6 +89,11 @@ const AppRoutes = () => {
           <Route path="/team-dashboard/:projectId" element={
             <ProtectedRoute>
               <TeamDashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           } />
         </Routes>

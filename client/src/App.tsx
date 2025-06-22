@@ -25,6 +25,7 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import CreateProfilePage from './pages/CreateProfilePage';
 import { TeamDashboardPage } from './pages/TeamDashboardPage';
+import {SettingsPage} from './pages/SettingsPage'
 import DirectChat from './components/DirectChat';
 
 function App() {
@@ -89,6 +90,12 @@ function App() {
                     <CreateProfilePage />
                   </ProtectedRoute>
                 } />
+                <Route path='/settings' element={
+                  <ProtectedRoute>
+                    <SettingsPage/>
+                  </ProtectedRoute>
+                  
+                }/>
                 <Route path='/team-dashboard/:projectId' element={<TeamDashboardPage />} />
               </Routes>
             </main>
