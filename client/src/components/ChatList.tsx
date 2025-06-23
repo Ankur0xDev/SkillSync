@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../Contexts/AuthContext';
+import { useTheme } from '../Contexts/ThemeContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -18,6 +19,7 @@ interface ChatListProps {
 }
 
 export const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
+  const { theme } = useTheme();
   const [chats, setChats] = useState<Chat[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
@@ -41,7 +43,7 @@ export const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+        <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${theme === 'dark' ? 'border-gray-700 border-t-gray-700' : 'border-purple-600 border-t-purple-600'}`}></div>
       </div>
     );
   }
@@ -49,7 +51,7 @@ export const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
   return (
     <div className="h-full overflow-y-auto">
       {chats.length === 0 ? (
-        <div className="flex items-center justify-center h-full text-gray-500">
+        <div className={`flex items-center justify-center h-full ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
           No conversations yet
         </div>
       ) : (
@@ -64,9 +66,9 @@ export const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
               <button
                 key={chat._id}
                 onClick={() => onSelectChat(chat._id, otherUser)}
-                className="w-full p-4 hover:bg-gray-50 flex items-center space-x-3"
+                className={`w-full p-4 ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} flex items-center space-x-3`}
               >
-                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <div className={`w-12 h-12 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-purple-100'} flex items-center justify-center`}>
                   {otherUser.profilePicture ? (
                     <img
                       src={otherUser.profilePicture}
@@ -74,14 +76,14 @@ export const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
-                    <span className="text-purple-600 font-medium text-lg">
+                    <span className={`${theme === 'dark' ? 'text-green-600' : 'text-purple-600'} font-medium text-lg`}>
                       {otherUser.name[0].toUpperCase()}
                     </span>
                   )}
                 </div>
                 <div className="flex-1 text-left">
-                  <h3 className="font-medium text-gray-900">{otherUser.name}</h3>
-                  <p className="text-sm text-gray-500">
+                  <h3 className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{otherUser.name}</h3>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                     {new Date(chat.lastMessage).toLocaleDateString()}
                   </p>
                 </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../Contexts/ThemeContext';
 import { 
   X, 
   Calendar,
@@ -29,7 +30,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   task 
 }) => {
   const isEditing = !!task;
-  
+  const { theme } = useTheme();
   const [formData, setFormData] = useState<CreateTaskData>({
     title: task?.title || '',
     description: task?.description || '',
@@ -117,17 +118,17 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <div className={`flex items-center justify-between p-6 ${theme === 'dark' ? 'border-b border-gray-700' : 'border-b border-gray-200'}`}>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
               {isEditing ? 'Edit Task' : 'Create New Task'}
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+                className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-400'} hover:text-gray-600 transition-colors`}
             >
               <X className="w-6 h-6" />
             </button>
@@ -137,39 +138,39 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Task Title *
               </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
+                className={`w-full px-4 py-3 border border-white ${theme === 'dark' ? 'border-gray-700 text-gray-100' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
                   errors.title ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="What needs to be done?"
               />
               {errors.title && (
-                <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+                <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-red-100' : 'text-red-600'}`}>{errors.title}</p>
               )}
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Description *
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${
+                className={`w-full px-4 py-3 border border-white ${theme === 'dark' ? 'border-gray-700 text-gray-100' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${
                   errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Describe the task in detail..."
               />
               {errors.description && (
-                <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+                <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-red-100' : 'text-red-600'}`}>{errors.description}</p>
               )}
             </div>
 
@@ -177,7 +178,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Status */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Status
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -200,7 +201,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
               {/* Priority */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Priority
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -227,7 +228,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Assignee */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Assignee
                 </label>
                 <div className="relative">
@@ -235,7 +236,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   <select
                     value={formData.assignee}
                     onChange={(e) => handleInputChange('assignee', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className={`w-full pl-10 pr-4 py-3 border border-white ${theme === 'dark' ? 'border-gray-700 text-gray-100' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                   >
                     <option value="">Unassigned</option>
                     {projectMembers.map((member) => (
@@ -249,7 +250,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
               {/* Due Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Due Date
                 </label>
                 <div className="relative">
@@ -258,7 +259,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                     type="date"
                     value={formData.dueDate}
                     onChange={(e) => handleInputChange('dueDate', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className={`w-full pl-10 pr-4 py-3 border border-white ${theme === 'dark' ? 'border-gray-700 text-gray-100' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                   />
                 </div>
               </div>
@@ -266,7 +267,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
             {/* Estimated Hours */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Estimated Hours
               </label>
               <div className="relative">
@@ -277,20 +278,20 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   step="0.5"
                   value={formData.estimatedHours || ''}
                   onChange={(e) => handleInputChange('estimatedHours', e.target.value ? parseFloat(e.target.value) : undefined)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
+                  className={`w-full pl-10 pr-4 py-3 border border-white ${theme === 'dark' ? 'border-gray-700 text-gray-100' : 'border-gray-300 text-gray-900'}    rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
                     errors.estimatedHours ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="e.g., 4.5"
                 />
               </div>
               {errors.estimatedHours && (
-                <p className="mt-1 text-sm text-red-600">{errors.estimatedHours}</p>
+                <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-red-100' : 'text-red-600'}`}>{errors.estimatedHours}</p>
               )}
             </div>
 
             {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Tags
               </label>
               <SkillInput
@@ -299,7 +300,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 placeholder="Add tags (e.g., frontend, bug, feature)"
                 // icon={<Tag className="w-4 h-4" />}
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className={`mt-1 text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                 Use tags to categorize and organize tasks
               </p>
             </div>
@@ -309,7 +310,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      className={`flex-1 px-6 py-3 border border-gray-300 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} rounded-lg hover:bg-gray-50 transition-colors`}
               >
                 Cancel
               </button>

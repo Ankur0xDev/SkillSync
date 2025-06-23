@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../contexts/ThemeContext';
 import { 
   X, 
   Users, 
@@ -22,7 +23,7 @@ export const TeamRequestModal: React.FC<TeamRequestModalProps> = ({ project, onC
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { theme } = useTheme();
   const handleInputChange = (field: keyof TeamRequestData, value: any) => {  //ts-ignore
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
@@ -67,30 +68,30 @@ export const TeamRequestModal: React.FC<TeamRequestModalProps> = ({ project, onC
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+        className={`fixed inset-0 ${theme === 'dark' ? 'bg-gray-700' : 'bg-black'} bg-opacity-50 flex items-center justify-center p-4 z-50`}
         onClick={onClose}
       >
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-white rounded-2xl shadow-xl max-w-md w-full"
+          className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-xl max-w-md w-full`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className={`flex items-center justify-between p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <UserPlus className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Join Team</h2>
-                <p className="text-sm text-gray-500">{project.title}</p>
+                <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Join Team</h2>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>{project.title}</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-400'} hover:text-gray-600 transition-colors`}
             >
               <X className="w-6 h-6" />
             </button>
@@ -99,12 +100,12 @@ export const TeamRequestModal: React.FC<TeamRequestModalProps> = ({ project, onC
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Project Info */}
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className={`${theme === 'dark' ? 'bg-gray-50' : 'bg-gray-100'} rounded-lg p-4`}>
               <div className="flex items-center space-x-3 mb-2">
                 <Users className="w-4 h-4 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">Project Details</span>
+                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Project Details</span>
               </div>
-              <div className="text-sm text-gray-600 space-y-1">
+              <div className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'} space-y-1`}>
                 <p><strong>Status:</strong> {project.status.replace('-', ' ')}</p>
                 <p><strong>Team Size:</strong> {project.teamMemberCount}/{project.teamSettings.maxTeamSize}</p>
                 <p><strong>Technologies:</strong> {project.technologies.join(', ')}</p>
@@ -113,7 +114,7 @@ export const TeamRequestModal: React.FC<TeamRequestModalProps> = ({ project, onC
 
             {/* Skills */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Your Skills *
               </label>
               <SkillInput
@@ -124,22 +125,22 @@ export const TeamRequestModal: React.FC<TeamRequestModalProps> = ({ project, onC
               {errors.skills && (
                 <p className="mt-1 text-sm text-red-600">{errors.skills}</p>
               )}
-              <p className="mt-1 text-xs text-gray-500">
+              <p className={`mt-1 text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                 Add skills that are relevant to this project
               </p>
             </div>
 
             {/* Message */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Message (Optional)
               </label>
               <textarea
                 value={formData.message}
                 onChange={(e) => handleInputChange('message', e.target.value)}
                 rows={3}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  errors.message ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.message ? 'border-red-500' : theme === 'dark' ? 'border-gray-700' : 'border-gray-300'
                 }`}
                 placeholder="Tell the project owner why you'd like to join and what you can contribute..."
                 maxLength={500}
@@ -147,7 +148,7 @@ export const TeamRequestModal: React.FC<TeamRequestModalProps> = ({ project, onC
               {errors.message && (
                 <p className="mt-1 text-sm text-red-600">{errors.message}</p>
               )}
-              <p className="mt-1 text-xs text-gray-500">
+              <p className={`mt-1 text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                 {formData?.message?.length}/500 characters
               </p>
             </div>
@@ -157,14 +158,14 @@ export const TeamRequestModal: React.FC<TeamRequestModalProps> = ({ project, onC
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className={`flex-1 px-6 py-3 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'} ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} rounded-lg hover:bg-gray-50 transition-colors`}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  className={`flex-1 px-6 py-3 ${theme === 'dark' ? 'bg-blue-600' : 'bg-blue-600'} text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2`}
               >
                 {isSubmitting ? (
                   <>

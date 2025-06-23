@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../Contexts/ThemeContext';
 import { 
   Plus, 
   MoreVertical, 
@@ -29,7 +30,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
 }) => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showTaskDetails, setShowTaskDetails] = useState(false);
-
+  const { theme } = useTheme();
   const columns = [
     { id: 'todo', title: 'To Do', color: 'bg-gray-100 text-gray-800' },
     { id: 'in-progress', title: 'In Progress', color: 'bg-blue-100 text-blue-800' },
@@ -87,10 +88,10 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">Task Board</h2>
+        <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Task Board</h2>
         <button
           onClick={onCreateTask}
-          className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+          className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors`}
         >
           <Plus className="w-4 h-4" />
           <span>New Task</span>
@@ -103,9 +104,9 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
           const columnTasks = tasks.filter(task => task.status === column.id);
           
           return (
-            <div key={column.id} className="bg-white rounded-lg shadow-sm border">
+            <div key={column.id} className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-sm border`}>
               {/* Column Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <div className={`flex items-center justify-between p-4 ${theme === 'dark' ? 'border-b border-gray-700' : 'border-b border-gray-200'}`}>
                 <div className="flex items-center space-x-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${column.color}`}>
                     {column.title}
@@ -129,25 +130,25 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                       key={task._id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors border border-gray-200"
+                      className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors border border-white ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}
                       onClick={() => openTaskDetails(task)}
                     >
                       {/* Task Header */}
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-medium text-gray-900 text-sm line-clamp-2">
+                        <h3 className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-sm line-clamp-2`}>
                           {task.title}
                         </h3>
-                        <button className="text-gray-400 hover:text-gray-600">
+                        <button className={`text-gray-400 hover:text-gray-600 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg p-2 `}>
                           <MoreVertical className="w-4 h-4" />
                         </button>
                       </div>
 
                       {/* Task Meta */}
-                      <div className="space-y-2">
+                      <div className={`space-y-2 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
                         {/* Priority */}
                         <div className="flex items-center space-x-1">
                           {getPriorityIcon(task.priority)}
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} ${getPriorityColor(task.priority)}`}>
                             {task.priority}
                           </span>
                         </div>
@@ -156,7 +157,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                         {task.assignee && (
                           <div className="flex items-center space-x-2">
                             <User className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-600">{task.assignee.name}</span>
+                            <span className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>{task.assignee.name}</span>
                           </div>
                         )}
 
@@ -164,7 +165,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                         {task.dueDate && (
                           <div className="flex items-center space-x-2">
                             <Calendar className="w-3 h-3 text-gray-400" />
-                            <span className={`text-xs ${
+                            <span className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'} ${
                               new Date(task.dueDate) < new Date() ? 'text-red-600' : 'text-gray-600'
                             }`}>
                               {formatDate(task.dueDate)}
@@ -176,7 +177,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                         {task.estimatedHours && (
                           <div className="flex items-center space-x-2">
                             <Clock className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-600">{task.estimatedHours}h</span>
+                            <span className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>{task.estimatedHours}h</span>
                           </div>
                         )}
 
@@ -186,12 +187,12 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                             <Tag className="w-3 h-3 text-gray-400" />
                             <div className="flex flex-wrap gap-1">
                               {task.tags.slice(0, 2).map((tag, index) => (
-                                <span key={index} className="px-1 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">
+                                <span key={index} className={`px-1 py-0.5 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'} ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'} rounded text-xs`}>
                                   {tag}
                                 </span>
                               ))}
                               {task.tags.length > 2 && (
-                                <span className="text-xs text-gray-500">+{task.tags.length - 2}</span>
+                                <span className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>+{task.tags.length - 2}</span>
                               )}
                             </div>
                           </div>
@@ -201,7 +202,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                         {task.comments && task.comments.length > 0 && (
                           <div className="flex items-center space-x-2">
                             <MessageSquare className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-600">{task.comments.length} comments</span>
+                            <span className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>{task.comments.length} comments</span>
                           </div>
                         )}
                       </div>
@@ -228,18 +229,18 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">{selectedTask.title}</h2>
+                    <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-2`}>{selectedTask.title}</h2>
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedTask.priority)}`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} ${getPriorityColor(selectedTask.priority)}`}>
                         {selectedTask.priority}
                       </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} ${
                         columns.find(col => col.id === selectedTask.status)?.color
                       }`}>
                         {selectedTask.status}
@@ -248,7 +249,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                   </div>
                   <button
                     onClick={() => setShowTaskDetails(false)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className={`text-gray-400 hover:text-gray-600 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}
                   >
                     <X className="w-6 h-6" />
                   </button>
@@ -257,34 +258,34 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                 <div className="space-y-6">
                   {/* Description */}
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
-                    <p className="text-gray-900">{selectedTask.description}</p>
+                    <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>Description</h3>
+                    <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{selectedTask.description}</p>
                   </div>
 
                   {/* Task Details */}
                   <div className="grid grid-cols-2 gap-4">
                     {selectedTask.assignee && (
                       <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">Assignee</h3>
-                        <p className="text-gray-900">{selectedTask.assignee.name}</p>
+                        <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-1`}>Assignee</h3>
+                        <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{selectedTask.assignee.name}</p>
                       </div>
                     )}
                     {selectedTask.dueDate && (
                       <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">Due Date</h3>
-                        <p className="text-gray-900">{new Date(selectedTask.dueDate).toLocaleDateString()}</p>
+                        <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-1`}>Due Date</h3>
+                        <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{new Date(selectedTask.dueDate).toLocaleDateString()}</p>
                       </div>
                     )}
                     {selectedTask.estimatedHours && (
                       <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">Estimated Hours</h3>
-                        <p className="text-gray-900">{selectedTask.estimatedHours}h</p>
+                        <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-1`}>Estimated Hours</h3>
+                        <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{selectedTask.estimatedHours}h</p>
                       </div>
                     )}
                     {selectedTask.actualHours && (
                       <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">Actual Hours</h3>
-                        <p className="text-gray-900">{selectedTask.actualHours}h</p>
+                        <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-1`}>Actual Hours</h3>
+                        <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{selectedTask.actualHours}h</p>
                       </div>
                     )}
                   </div>
@@ -292,10 +293,10 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                   {/* Tags */}
                   {selectedTask.tags && selectedTask.tags.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 mb-2">Tags</h3>
+                      <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>Tags</h3>
                       <div className="flex flex-wrap gap-2">
                         {selectedTask.tags.map((tag, index) => (
-                          <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">
+                          <span key={index} className={`px-2 py-1 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'} ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} rounded text-sm`}>
                             {tag}
                           </span>
                         ))}
@@ -306,17 +307,17 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
                   {/* Comments */}
                   {selectedTask.comments && selectedTask.comments.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 mb-2">Comments ({selectedTask.comments.length})</h3>
+                      <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>Comments ({selectedTask.comments.length})</h3>
                       <div className="space-y-3">
                         {selectedTask.comments.map((comment) => (
-                          <div key={comment._id} className="bg-gray-50 rounded-lg p-3">
+                          <div key={comment._id} className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} rounded-lg p-3`}>
                             <div className="flex items-center space-x-2 mb-1">
-                              <span className="text-sm font-medium text-gray-900">{comment.author.name}</span>
-                              <span className="text-xs text-gray-500">
+                              <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{comment.author.name}</span>
+                              <span className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                                 {new Date(comment.createdAt).toLocaleDateString()}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-700">{comment.content}</p>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>{comment.content}</p>
                           </div>
                         ))}
                       </div>

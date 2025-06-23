@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSocket } from '../hooks/useSocket';
+import { useTheme } from '../Contexts/ThemeContext';
 import { useAuth } from '../Contexts/AuthContext';
 import { Send } from 'lucide-react';
 import axios from 'axios';
@@ -26,6 +27,7 @@ interface ChatProps {
 }
 
 export const Chat: React.FC<ChatProps> = ({ chatId, otherUser }) => {
+  const { theme } = useTheme();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -96,9 +98,9 @@ export const Chat: React.FC<ChatProps> = ({ chatId, otherUser }) => {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+    <div className={`flex flex-col h-full ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
       {/* Chat header */}
-      <div className="bg-white border-b p-4 flex items-center space-x-3">
+      <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} border-b p-4 flex items-center space-x-3`}>
         <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
           {otherUser.profilePicture ? (
             <img
@@ -113,7 +115,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId, otherUser }) => {
           )}
         </div>
         <div>
-          <h3 className="font-medium text-gray-900">{otherUser.name}</h3>
+          <h3 className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{otherUser.name}</h3>
         </div>
       </div>
 
@@ -127,10 +129,10 @@ export const Chat: React.FC<ChatProps> = ({ chatId, otherUser }) => {
             }`}
           >
             <div
-              className={`max-w-[70%] rounded-lg p-3 ${
+              className={`max-w-[70%] rounded-lg p-3 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-200 text-gray-900'} ${
                 message.sender._id === user?._id
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  ? `${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'}`
+                  : `${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-200 text-gray-900'}`
               }`}
             >
               <p>{message.content}</p>
@@ -150,18 +152,18 @@ export const Chat: React.FC<ChatProps> = ({ chatId, otherUser }) => {
       </div>
 
       {/* Message input */}
-      <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
+      <form onSubmit={handleSendMessage} className={`p-4 border-t ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
         <div className="flex space-x-2">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className={`flex-1 px-4 py-2 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
           />
           <button
             type="submit"
-            className="bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700"
+              className={`${theme === 'dark' ? 'bg-green-600 text-white p-2 rounded-lg hover:bg-green-700' : 'bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700'}`}
           >
             <Send className="w-5 h-5" />
           </button>

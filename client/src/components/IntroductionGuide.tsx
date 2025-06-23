@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, UserPlus, User, Users, Code2 } from 'lucide-react';
+import { useTheme } from '../Contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 // import { useAuth } from '../Contexts/AuthContext';
 
@@ -13,6 +14,7 @@ interface Step {
 }
 
 export const IntroductionGuide: React.FC = () => {
+  const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
@@ -82,12 +84,12 @@ export const IntroductionGuide: React.FC = () => {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-purple-100"
+          className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-2xl overflow-hidden border border-purple-100`}
         >
           {/* Progress bar */}
-          <div className="h-1 bg-gray-200">
+          <div className={`h-1 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
             <motion.div
-              className="h-full bg-purple-600"
+              className={`h-full ${theme === 'dark' ? 'bg-green-600' : 'bg-purple-600'}`}
               initial={{ width: 0 }}
               animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
               transition={{ duration: 0.3 }}
@@ -97,10 +99,10 @@ export const IntroductionGuide: React.FC = () => {
           <div className="p-6">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center text-white">
+                <div className={`w-10 h-10 ${theme === 'dark' ? 'bg-green-600' : 'bg-purple-600'} rounded-xl flex items-center justify-center text-white`}>
                   {steps[currentStep].icon}
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">
+                <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
                   {steps[currentStep].title}
                 </h3>
               </div>
@@ -112,7 +114,7 @@ export const IntroductionGuide: React.FC = () => {
               </button>
             </div>
 
-            <p className="text-gray-600 text-sm mb-6">
+            <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'} text-sm mb-6`}>
               {steps[currentStep].description}
             </p>
 
@@ -122,7 +124,7 @@ export const IntroductionGuide: React.FC = () => {
                   <div
                     key={index}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentStep ? 'bg-purple-600' : 'bg-gray-300'
+                      index === currentStep ? `${theme === 'dark' ? 'bg-green-600' : 'bg-purple-600'}` : 'bg-gray-300'
                     }`}
                   />
                 ))}
@@ -131,14 +133,14 @@ export const IntroductionGuide: React.FC = () => {
                 {currentStep > 0 && (
                   <button
                     onClick={() => setCurrentStep(currentStep - 1)}
-                    className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                    className={`px-3 py-1.5 text-sm ${theme === 'dark' ? 'text-gray-100 hover:text-gray-900' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
                   >
                     Back
                   </button>
                 )}
                 <button
                   onClick={steps[currentStep].action}
-                  className="bg-purple-600 text-white px-4 py-1.5 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 text-sm font-semibold"
+                        className={`${theme === 'dark' ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700'} text-white px-4 py-1.5 rounded-lg transition-colors flex items-center space-x-2 text-sm font-semibold`}
                 >
                   <span>{steps[currentStep].buttonText}</span>
                   <ArrowRight className="w-4 h-4" />

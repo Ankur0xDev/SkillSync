@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../Contexts/ThemeContext';
 import { 
   X, 
   // Hash, 
@@ -19,7 +20,8 @@ interface DiscussionModalProps {
 }
 
 export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSubmit }) => {
-  const [formData, setFormData] = useState<CreateDiscussionData>({
+  const { theme } = useTheme();
+    const [formData, setFormData] = useState<CreateDiscussionData>({
     title: '',
     content: '',
     category: 'general',
@@ -147,22 +149,22 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+        className={`fixed inset-0 ${theme === 'dark' ? 'bg-gray-800 bg-opacity-50' : 'bg-black bg-opacity-50'} flex items-center justify-center p-4 z-50`}
         onClick={onClose}
       >
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Start a Discussion</h2>
+          <div className={`flex items-center justify-between p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Start a Discussion</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className={`${theme === 'dark' ? 'text-gray-100 hover:text-gray-600' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
             >
               <X className="w-6 h-6" />
             </button>
@@ -172,14 +174,14 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Discussion Title *
               </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
+                className={`w-full px-4 py-3 border border-white ${theme === 'dark' ? 'border-gray-700 text-gray-100' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
                   errors.title ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="What would you like to discuss?"
@@ -191,7 +193,7 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Category
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -214,14 +216,14 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
 
             {/* Content */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Content *
               </label>
               <textarea
                 value={formData.content}
                 onChange={(e) => handleInputChange('content', e.target.value)}
                 rows={6}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${
+                className={`w-full px-4 py-3 border border-white ${theme === 'dark' ? 'border-gray-700 text-gray-100' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${
                   errors.content ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Share your thoughts, questions, or ideas..."
@@ -233,7 +235,7 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
 
             {/* Hashtags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Hashtags
               </label>
               <SkillInput
@@ -242,17 +244,17 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
                 placeholder="Add hashtags (e.g., #frontend #bug #feature)"
                 // icon={<Hash className="w-4 h-4" />}
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className={`mt-1 text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                 Use hashtags to categorize and make discussions easier to find
               </p>
             </div>
 
             {/* File Attachments */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Attachments
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <div className={`border-2 border-dashed ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'} rounded-lg p-6 text-center`}>
                 <input
                   type="file"
                   onChange={handleFileUpload}
@@ -262,14 +264,14 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
                 />
                 <label
                   htmlFor="file-upload"
-                  className="cursor-pointer flex flex-col items-center space-y-2"
+                  className={`cursor-pointer flex flex-col items-center space-y-2 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-400'}`}
                 >
-                  <Paperclip className="w-8 h-8 text-gray-400" />
+                  <Paperclip className="w-8 h-8" />
                   <div>
                     <span className="text-sm font-medium text-purple-600 hover:text-purple-500">
                       {uploadingFile ? 'Uploading...' : 'Click to upload files'}
                     </span>
-                    <p className="text-xs text-gray-500">Images, documents, archives up to 10MB</p>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>Images, documents, archives up to 10MB</p>
                   </div>
                 </label>
               </div>
@@ -281,18 +283,18 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
               {formData.attachments && formData.attachments.length > 0 && (
                 <div className="mt-4 space-y-2">
                   {formData.attachments.map((file, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={index} className={`flex items-center justify-between p-3 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} rounded-lg`}>
                       <div className="flex items-center space-x-3">
                         {getFileIcon(file.fileType)}
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{file.originalName}</p>
-                          <p className="text-xs text-gray-500">{formatFileSize(file.fileSize)}</p>
+                          <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{file.originalName}</p>
+                          <p className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>{formatFileSize(file.fileSize)}</p>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => removeAttachment(index)}
-                        className="text-red-500 hover:text-red-700"
+                        className={`${theme === 'dark' ? 'text-red-500 hover:text-red-700' : 'text-red-500 hover:text-red-700'}`}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -307,18 +309,18 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({ onClose, onSub
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className={`flex-1 px-6 py-3 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'} text-gray-700 rounded-lg hover:bg-gray-50 transition-colors`}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || uploadingFile}
-                className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                      className={`flex-1 px-6 py-3 ${theme === 'dark' ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700'} text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2`}
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className={`w-4 h-4 border-2 ${theme === 'dark' ? 'border-gray-700 border-t-gray-700' : 'border-white border-t-transparent'} rounded-full animate-spin`} />
                     <span>Creating...</span>
                   </>
                 ) : (

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import GitHubStats from './GitHubStats';
 import { LinkedInStats } from './LinkedInStats';
 import type { User } from '../types';
-
+import { useTheme } from '../Contexts/ThemeContext';
 interface SocialStatsProps {
   user: User;
 }
@@ -11,7 +11,7 @@ type StatsType = 'github' | 'linkedin';
 
 export const SocialStats: React.FC<SocialStatsProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<StatsType>('github');
-
+  const { theme } = useTheme();
   const hasGitHub = !!user.github;
   const hasLinkedIn = !!user.linkedin;
 
@@ -20,14 +20,14 @@ export const SocialStats: React.FC<SocialStatsProps> = ({ user }) => {
   }
 
   return (
-    <div className="mb-8 w-[64vw]">
+    <div className={`mb-8 w-[64vw] ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
       {/* Tabs */}
-      <div className="flex items-center w-full justify-between mb-4">
-        <div className="flex space-x-4">
+      <div className={`flex items-center w-full justify-between mb-4 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
+        <div className={`flex space-x-4 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
           {hasGitHub && (
             <button
               onClick={() => setActiveTab('github')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} ${
                 activeTab === 'github'
                   ? 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100'
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -39,7 +39,7 @@ export const SocialStats: React.FC<SocialStatsProps> = ({ user }) => {
           {hasLinkedIn && (
             <button
               onClick={() => setActiveTab('linkedin')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} ${
                 activeTab === 'linkedin'
                   ? 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100'
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -54,7 +54,7 @@ export const SocialStats: React.FC<SocialStatsProps> = ({ user }) => {
             href={user.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary-600 dark:text-primary-400 hover:underline flex items-center"
+            className={`text-primary-600 dark:text-primary-400 hover:underline flex items-center ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}
           >
             <span className="text-blue-500">View GitHub Profile</span>
             <svg className="w-4 h-4 ml-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@ export const SocialStats: React.FC<SocialStatsProps> = ({ user }) => {
             href={user.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary-600 dark:text-primary-400 hover:underline flex items-center"
+            className={`text-primary-600 dark:text-primary-400 hover:underline flex items-center ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}
           >
             <span className="text-blue-500">View LinkedIn Profile</span>
             <svg className="w-4 h-4 ml-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,7 +78,7 @@ export const SocialStats: React.FC<SocialStatsProps> = ({ user }) => {
       </div>
 
       {/* Stats Content */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-lg p-6`}>
         {activeTab === 'github' && user.github && (
           <GitHubStats githubUrl={user.github} />
         )}

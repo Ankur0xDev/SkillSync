@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../Contexts/ThemeContext';
 import { 
   MessageSquare, 
   CheckSquare, 
@@ -30,6 +31,7 @@ import { DiscussionList } from '../components/DiscussionList';
 export const TeamDashboardPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<'overview' | 'discussions' | 'tasks'>('overview');
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
@@ -176,37 +178,38 @@ export const TeamDashboardPage: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Project not found</h2>
-          <Link to="/projects" className="text-purple-600 hover:text-purple-700">
+          <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Project not found</h2>
+          <Link to="/projects" className={`${theme === 'dark' ? 'text-purple-600' : 'text-purple-600'} hover:text-purple-700`}>
             Back to Projects
           </Link>
         </div>
+
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-sm border-b`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
               <Link
                 to="/projects"
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-100 hover:text-gray-900' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Projects</span>
               </Link>
               <div className="h-6 w-px bg-gray-300" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{overview.project.title}</h1>
-                <p className="text-sm text-gray-500">Team Dashboard</p>
+                <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{overview.project.title}</h1>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>Team Dashboard</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <div className={`flex items-center space-x-2 text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                 <Users className="w-4 h-4" />
                 <span>{overview.project.teamMembers.length} members</span>
               </div>
@@ -217,14 +220,14 @@ export const TeamDashboardPage: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-sm border mb-8">
+        <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-sm border mb-8`}>
           <div className="flex border-b">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'overview'
-                  ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? `${theme === 'dark' ? 'border-purple-500 text-purple-600' : 'border-purple-500 text-purple-600'}`
+                  : `${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'} border-transparent `
               }`}
             >
               <BarChart3 className="w-4 h-4" />
@@ -235,7 +238,7 @@ export const TeamDashboardPage: React.FC = () => {
               className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'discussions'
                   ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : `${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'} border-transparent `
               }`}
             >
               <MessageSquare className="w-4 h-4" />
@@ -246,7 +249,7 @@ export const TeamDashboardPage: React.FC = () => {
               className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'tasks'
                   ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : `${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'} border-transparent `
               }`}
             >
               <CheckSquare className="w-4 h-4" />
@@ -267,11 +270,11 @@ export const TeamDashboardPage: React.FC = () => {
             >
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-sm border p-6`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Total Tasks</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>Total Tasks</p>
+                      <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
                         {overview.taskStats.todo + overview.taskStats.inProgress + overview.taskStats.review + overview.taskStats.done}
                       </p>
                     </div>
@@ -281,11 +284,11 @@ export const TeamDashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-sm border p-6`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">In Progress</p>
-                      <p className="text-2xl font-bold text-blue-600">{overview.taskStats.inProgress}</p>
+                      <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>In Progress</p>
+                      <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-blue-600'}`}>{overview.taskStats.inProgress}</p>
                     </div>
                     <div className="p-3 bg-blue-100 rounded-lg">
                       <Clock className="w-6 h-6 text-blue-600" />
@@ -293,11 +296,11 @@ export const TeamDashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-sm border p-6`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Completed</p>
-                      <p className="text-2xl font-bold text-green-600">{overview.taskStats.done}</p>
+                      <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>Completed</p>
+                      <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-green-600'}`}>{overview.taskStats.done}</p>
                     </div>
                     <div className="p-3 bg-green-100 rounded-lg">
                       <TrendingUp className="w-6 h-6 text-green-600" />
@@ -305,11 +308,11 @@ export const TeamDashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-sm border p-6`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Discussions</p>
-                      <p className="text-2xl font-bold text-purple-600">{discussions.length}</p>
+                      <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>Discussions</p>
+                      <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-purple-600'}`}>{discussions.length}</p>
                     </div>
                     <div className="p-3 bg-purple-100 rounded-lg">
                       <MessageSquare className="w-6 h-6 text-purple-600" />
@@ -321,12 +324,12 @@ export const TeamDashboardPage: React.FC = () => {
               {/* Recent Activity */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Recent Discussions */}
-                <div className="bg-white rounded-lg shadow-sm border">
+                <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-sm border`}>
                   <div className="flex items-center justify-between p-6 border-b">
-                    <h3 className="text-lg font-semibold text-gray-900">Recent Discussions</h3>
+                    <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Recent Discussions</h3>
                     <button
                       onClick={() => setShowDiscussionModal(true)}
-                      className="flex items-center space-x-2 bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                      className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-purple-600' : 'bg-purple-600'} text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors`}
                     >
                       <Plus className="w-4 h-4" />
                       <span>New</span>
@@ -334,7 +337,7 @@ export const TeamDashboardPage: React.FC = () => {
                   </div>
                   <div className="p-6">
                     {overview.recentDiscussions.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">No discussions yet</p>
+                      <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'} text-center py-8`}>No discussions yet</p>
                     ) : (
                       <div className="space-y-4">
                         {overview.recentDiscussions.map((discussion) => (
@@ -353,10 +356,10 @@ export const TeamDashboardPage: React.FC = () => {
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">
+                                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} truncate`}>
                                 {discussion.title}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                                 by {discussion.author.name} • {new Date(discussion.createdAt).toLocaleDateString()}
                               </p>
                             </div>
@@ -368,12 +371,12 @@ export const TeamDashboardPage: React.FC = () => {
                 </div>
 
                 {/* Recent Tasks */}
-                <div className="bg-white rounded-lg shadow-sm border">
+                  <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-sm border`}>
                   <div className="flex items-center justify-between p-6 border-b">
-                    <h3 className="text-lg font-semibold text-gray-900">Recent Tasks</h3>
+                    <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Recent Tasks</h3>
                     <button
                       onClick={() => setShowTaskModal(true)}
-                      className="flex items-center space-x-2 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                            className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-green-600' : 'bg-green-600'} text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors`}
                     >
                       <Plus className="w-4 h-4" />
                       <span>New</span>
@@ -381,7 +384,7 @@ export const TeamDashboardPage: React.FC = () => {
                   </div>
                   <div className="p-6">
                     {overview.recentTasks.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">No tasks yet</p>
+                      <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'} text-center py-8`}>No tasks yet</p>
                     ) : (
                       <div className="space-y-4">
                         {overview.recentTasks.map((task) => (
@@ -390,7 +393,7 @@ export const TeamDashboardPage: React.FC = () => {
                               <CheckSquare className="w-4 h-4 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">
+                                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} truncate`}>
                                 {task.title}
                               </p>
                               <div className="flex items-center space-x-2 mt-1">

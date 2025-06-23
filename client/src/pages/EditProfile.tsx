@@ -4,6 +4,7 @@ import { useAuth } from '../Contexts/AuthContext';
 import axios from 'axios';
 import { Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTheme } from '../Contexts/ThemeContext';
 
 interface ProfileData {
   name: string;
@@ -24,6 +25,7 @@ interface ProfileData {
 
 export const EditProfile: React.FC = () => {
   const {  updateUser } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -116,17 +118,17 @@ export const EditProfile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} py-8`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Profile Picture Section */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile Pictures</h2>
+          <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-6`}>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Profile Pictures</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Profile Picture */}
               <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Profile Picture</label>
                 <div className="relative">
                   <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                     {profileData.profilePicture ? (
@@ -140,7 +142,7 @@ export const EditProfile: React.FC = () => {
                     )}
                   </div>
                   <div className="mt-4 flex space-x-2">
-                    <label className="cursor-pointer bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    <label className={`cursor-pointer ${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors`}>
                       <input
                         type="file"
                         className="hidden"
@@ -153,7 +155,7 @@ export const EditProfile: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleImageRemove('profilePicture')}
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                        className={`${theme === 'dark' ? 'bg-red-600 text-white' : 'bg-red-600 text-white'} px-4 py-2 rounded-lg hover:bg-red-700 transition-colors`}
                       >
                         Remove
                       </button>
@@ -164,7 +166,7 @@ export const EditProfile: React.FC = () => {
 
               {/* Background Picture */}
               <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700">Background Picture</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Background Picture</label>
                 <div className="relative">
                   <div className="w-full h-32 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                     {profileData.backgroundPicture ? (
@@ -178,7 +180,7 @@ export const EditProfile: React.FC = () => {
                     )}
                   </div>
                   <div className="mt-4 flex space-x-2">
-                    <label className="cursor-pointer bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    <label className={`cursor-pointer ${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors`}>
                       <input
                         type="file"
                         className="hidden"
@@ -191,7 +193,7 @@ export const EditProfile: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleImageRemove('backgroundPicture')}
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                        className={`${theme === 'dark' ? 'bg-red-600 text-white' : 'bg-red-600 text-white'} px-4 py-2 rounded-lg hover:bg-red-700 transition-colors`}
                       >
                         Remove
                       </button>
@@ -203,11 +205,11 @@ export const EditProfile: React.FC = () => {
           </div>
 
           {/* Basic Information */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Basic Information</h2>
+          <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-6`}>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Name</label>
                 <input
                   type="text"
                   value={profileData.name}
@@ -216,7 +218,7 @@ export const EditProfile: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Bio</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Bio</label>
                 <textarea
                   value={profileData.bio}
                   onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
@@ -228,11 +230,11 @@ export const EditProfile: React.FC = () => {
           </div>
 
           {/* Location */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Location</h2>
+          <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-6`}>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Location</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Country</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Country</label>
                 <input
                   type="text"
                   value={profileData.country}
@@ -241,7 +243,7 @@ export const EditProfile: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">City</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>City</label>
                 <input
                   type="text"
                   value={profileData.city}
@@ -253,11 +255,11 @@ export const EditProfile: React.FC = () => {
           </div>
 
           {/* Social Links */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Social Links</h2>
+          <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-6`}>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Social Links</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">GitHub</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>GitHub</label>
                 <input
                   type="url"
                   value={profileData.github}
@@ -266,7 +268,7 @@ export const EditProfile: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">LinkedIn</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>LinkedIn</label>
                 <input
                   type="url"
                   value={profileData.linkedin}
@@ -275,7 +277,7 @@ export const EditProfile: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Website</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Website</label>
                 <input
                   type="url"
                   value={profileData.website}
@@ -291,7 +293,7 @@ export const EditProfile: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                className={`${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50`}
             >
               {loading ? 'Saving...' : 'Save Changes'}
             </button>

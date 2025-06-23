@@ -1,5 +1,6 @@
 import React, { useState} from 'react';
 import type {KeyboardEvent} from 'react';
+import { useTheme } from '../Contexts/ThemeContext';
 import { X } from 'lucide-react';
 
 interface SkillInputProps {
@@ -14,7 +15,7 @@ export const SkillInput: React.FC<SkillInputProps> = ({
   placeholder = 'Add skills...'
 }) => {
   const [inputValue, setInputValue] = useState('');
-
+  const { theme } = useTheme();
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === ' ' && inputValue.trim()) {
       e.preventDefault();
@@ -34,16 +35,16 @@ export const SkillInput: React.FC<SkillInputProps> = ({
   };
 
   return (
-    <div className="flex flex-wrap gap-2 p-2 border rounded-lg bg-white">
+    <div className={`flex flex-wrap gap-2 p-2 border rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
       {skills.map((skill, index) => (
         <div
           key={index}
-          className="flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full"
+          className={`flex items-center gap-1 px-3 py-1 ${theme === 'dark' ? 'bg-purple-100' : 'bg-purple-100'} text-purple-700 rounded-full`}
         >
           <span className="text-sm font-medium">{skill}</span>
           <button
             onClick={() => removeSkill(skill)}
-            className="text-purple-500 hover:text-purple-700 focus:outline-none"
+            className={`text-purple-500 hover:text-purple-700 focus:outline-none`}
           >
             <X className="w-4 h-4" />
           </button>
@@ -55,7 +56,7 @@ export const SkillInput: React.FC<SkillInputProps> = ({
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={skills.length === 0 ? placeholder : ''}
-        className="flex-1 min-w-[120px] outline-none text-sm"
+        className={`flex-1 min-w-[120px] outline-none text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}
       />
     </div>
   );
