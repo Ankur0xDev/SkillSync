@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTheme } from '../Contexts/ThemeContext';  
 import { motion } from 'framer-motion';
 import {
   MapPin,
@@ -43,6 +44,7 @@ interface PublicProfile {
 }
 
 export const PublicProfilePage: React.FC = () => {
+  const { theme } = useTheme();
   const { id } = useParams<{ id: string }>();
   const { isAuthenticated, user } = useAuth();
   const [profile, setProfile] = useState<PublicProfile | null>(null);
@@ -157,7 +159,7 @@ export const PublicProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} py-8`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <motion.div
@@ -167,7 +169,7 @@ export const PublicProfilePage: React.FC = () => {
         >
           <Link
             to="/search"
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-400 hover:text-gray-100' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Search</span>
@@ -179,7 +181,7 @@ export const PublicProfilePage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8"
+          className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg overflow-hidden mb-8`}
         >
           <div
             className="h-32 relative"
@@ -190,14 +192,14 @@ export const PublicProfilePage: React.FC = () => {
             }}
           >
             {!profile.backgroundPicture && (
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600" />
+              <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'}`} />
             )}
             <div className="absolute inset-0 bg-black/30" />
           </div>
 
           <div className="relative px-8 pb-8">
             <div className={`flex flex-col sm:flex-row items-start sm:items-end space-y-4 sm:space-y-0 sm:space-x-6 -mt-8`}>
-              <div className={`w-32 h-32 ${profile.profilePicture ? 'bg-white/20' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-2xl shadow-lg flex items-center justify-center border-4 border-white overflow-hidden`}>
+              <div className={`w-32 h-32 ${profile.profilePicture ? 'bg-white/20' : theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-2xl shadow-lg flex items-center justify-center border-4 border-white overflow-hidden`}>
                 {profile.profilePicture ? (
                   <img
                     src={profile.profilePicture}
@@ -216,33 +218,33 @@ export const PublicProfilePage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className='flex  items-center justify-center gap-2 mb-3 '>
-                      <h1 className="text-2xl font-bold text-gray-900 cursor-default ">
+                      <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} cursor-default `}>
                         {profile.name}
                       </h1>
                       <h1 className='mt-1 '>
                         {profile.isVerified ?
                           (<VerifiedBadge />)
                           :
-                          (<p className='text-gray-400 italic cursor-default'>(not verified)</p>)}
+                          (<p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} italic cursor-default`}> (not verified)</p>)}
                       </h1>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4 text-gray-600 mb-4">
+                    <div className={`flex flex-wrap items-center gap-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
                       {profile.country && (
                         <div className="flex items-center space-x-1">
                           <MapPin className="w-4 h-4" />
-                          <span>{profile.city ? `${profile.city}, ` : ''}{profile.country}</span>
+                          <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{profile.city ? `${profile.city}, ` : ''}{profile.country}</span>
                         </div>
                       )}
                       <div className="flex items-center space-x-1 ">
                         
                         <Calendar className="w-4 h-4" />
-                        <span className=''>Joined {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                        <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Joined {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
                         
                       </div>
                       <div className="flex items-center space-x-1">
                         <Clock className="w-4 h-4" />
-                        <span>{getTimeAgo(profile.lastSeen)}</span>
+                        <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{getTimeAgo(profile.lastSeen)}</span>
                       </div>
                     </div>
                   </div>
@@ -250,7 +252,7 @@ export const PublicProfilePage: React.FC = () => {
                     <button
                       onClick={sendConnectionRequest}
                       disabled={sendingRequest || sentRequest}
-                      className="bg-purple-600 text-white px-6 py-2 mt-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className={`${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'} px-6 py-2 mt-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       {sendingRequest ? (
                         <LoadingSpinner size="sm" />
@@ -268,7 +270,7 @@ export const PublicProfilePage: React.FC = () => {
                     </button>
                   )}
                   {!isOwnProfile && isAuthenticated && isConnected && (
-                    <div className="bg-green-100 text-green-800 px-6 py-2 mt-4  rounded-lg flex items-center space-x-2">
+                    <div className={`${theme === 'dark' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'} px-6 py-2 mt-4  rounded-lg flex items-center space-x-2`}>
                       <Check className="w-4 h-4" />
                       <span>Connected</span>
                     </div>
@@ -276,7 +278,7 @@ export const PublicProfilePage: React.FC = () => {
                   {isOwnProfile && (
                     <Link
                       to="/profile/edit"
-                      className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                      className={`${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'} px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors`}
                     >
                       Edit Profile
                     </Link>
@@ -295,13 +297,13 @@ export const PublicProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl shadow-lg p-8"
+                className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-8`}
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">About</h2>
+              <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>About</h2>
               {profile.bio ? (
-                <p className="text-gray-700 leading-relaxed">{profile.bio}</p>
+                <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'} leading-relaxed`}>{profile.bio}</p>
               ) : (
-                <p className="text-gray-500 italic">No bio available</p>
+                <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} italic`}>No bio available</p>
               )}
             </motion.div>
 
@@ -310,22 +312,22 @@ export const PublicProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-2xl shadow-lg p-8"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-8`}
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Skills</h2>
+              <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Skills</h2>
               {profile.skills.length > 0 ? (
                 <div className="flex flex-wrap gap-3">
                   {profile.skills.map((skill, index) => (
                     <span
                       key={index}
-                      className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium"
+                      className={`${theme === 'dark' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'} px-4 py-2 rounded-full text-sm font-medium`}
                     >
                       {skill}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 italic">No skills listed</p>
+                <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} italic`}>No skills listed</p>
               )}
             </motion.div>
 
@@ -334,22 +336,22 @@ export const PublicProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-white rounded-2xl shadow-lg p-8"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-8`}
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Interests</h2>
+              <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Interests</h2>
               {profile.interests.length > 0 ? (
                 <div className="flex flex-wrap gap-3">
                   {profile.interests.map((interest, index) => (
                     <span
                       key={index}
-                      className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium"
+                      className={`${theme === 'dark' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'} px-4 py-2 rounded-full text-sm font-medium`}
                     >
                       {interest}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 italic">No interests listed</p>
+                <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} italic`}>No interests listed</p>
               )}
             </motion.div>
           </div>
@@ -361,25 +363,25 @@ export const PublicProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-6`}
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Stats</h3>
+              <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Profile Stats</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Star className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-600">Profile Views</span>
+                    <Star className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Profile Views</span>
                   </div>
-                  <span className="font-semibold text-gray-900">{profile.profileViews}</span>
+                  <span className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{profile.profileViews}</span>
 
 
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-600">Connections</span>
+                    <Users className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Connections</span>
                   </div>
-                  <span className="font-semibold text-gray-900">{profile.connections.length}</span>
+                  <span className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{profile.connections.length}</span>
 
 
                 </div>
@@ -391,13 +393,13 @@ export const PublicProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-6`}
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Details</h3>
+              <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Details</h3>
               <div className="space-y-4">
                 {profile.experience && (
                   <div>
-                    <label className="text-sm text-gray-500 block mb-1">Experience Level</label>
+                    <label className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} block mb-1`}>Experience Level</label>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${experienceColors[profile.experience as keyof typeof experienceColors]}`}>
                       {profile.experience.charAt(0).toUpperCase() + profile.experience.slice(1)}
                     </span>
@@ -405,7 +407,7 @@ export const PublicProfilePage: React.FC = () => {
                 )}
                 {profile.availability && (
                   <div>
-                    <label className="text-sm text-gray-500 block mb-1">Availability</label>
+                    <label className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} block mb-1`}>Availability</label>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${availabilityColors[profile.availability as keyof typeof availabilityColors]}`}>
                       {profile.availability.charAt(0).toUpperCase() + profile.availability.slice(1)}
                     </span>
@@ -413,10 +415,10 @@ export const PublicProfilePage: React.FC = () => {
                 )}
                 {profile.lookingFor && profile.lookingFor.length > 0 && (
                   <div>
-                    <label className="text-sm text-gray-500 block mb-2">Looking For</label>
+                    <label className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} block mb-2`}>Looking For</label>
                     <div className="space-y-1">
                       {profile.lookingFor.map((item, index) => (
-                        <div key={index} className="text-sm text-gray-700">
+                        <div key={index} className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>
                           • {item.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </div>
                       ))}
@@ -432,16 +434,16 @@ export const PublicProfilePage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-white rounded-2xl shadow-lg p-6"
+                className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-6`}
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Links</h3>
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Links</h3>
                 <div className="space-y-3">
                   {profile.github && (
                     <a
                       href={profile.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-3 text-blue-600 hover:text-gray-900 transition-colors"
+                      className={`flex items-center space-x-3 ${theme === 'dark' ? 'text-green-600 hover:text-gray-900' : 'text-blue-600 hover:text-gray-900'} transition-colors`}
                     >
                       <Github className="w-5 h-5" />
                       <span>GitHub</span>
@@ -452,7 +454,7 @@ export const PublicProfilePage: React.FC = () => {
                       href={profile.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-3 text-blue-600 hover:text-gray-900 transition-colors"
+                      className={`flex items-center space-x-3 ${theme === 'dark' ? 'text-green-600 hover:text-gray-900' : 'text-blue-600 hover:text-gray-900'} transition-colors`}
                     >
                       <Linkedin className="w-5 h-5" />
                       <span>LinkedIn</span>
@@ -463,7 +465,7 @@ export const PublicProfilePage: React.FC = () => {
                       href={profile.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-3 text-blue-600 hover:text-gray-900 transition-colors"
+                        className={`flex items-center space-x-3 ${theme === 'dark' ? 'text-green-600 hover:text-gray-900' : 'text-blue-600 hover:text-gray-900'} transition-colors`}
                     >
                       <Globe className="w-5 h-5" />
                       <span>Website</span>
@@ -476,11 +478,11 @@ export const PublicProfilePage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-white rounded-2xl shadow-lg p-6"
+                className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-6`}
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Links</h3>
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Links</h3>
                 <div>
-                  <p className='text-gray-400 italic'>Not Provided</p>
+                  <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} italic`}>Not Provided</p>
                 </div>
 
               </motion.div>
@@ -493,15 +495,15 @@ export const PublicProfilePage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-lg p-6 text-white text-center"
+                className={`${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-2xl shadow-lg p-6 text-white text-center`}
               >
-                <h3 className="font-semibold mb-2">Want to connect?</h3>
-                <p className="text-purple-100 text-sm mb-4">
+                <h3 className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-2`}>Want to connect?</h3>
+                <p className={`${theme === 'dark' ? 'text-green-100' : 'text-purple-100'} text-sm mb-4`}>
                   Sign up to send connection requests and build your network
                 </p>
                 <Link
                   to="/auth"
-                  className="bg-white text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-purple-50 transition-colors inline-block"
+                      className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-purple-600'} px-4 py-2 rounded-lg font-medium hover:bg-purple-50 transition-colors inline-block`}
                 >
                   Sign Up Free
                 </Link>

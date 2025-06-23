@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../Contexts/ThemeContext';
 import { 
   Github, 
   Heart, 
@@ -35,6 +36,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   onTeamRequest, 
   index 
 }) => {
+  const { theme } = useTheme();
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(project.likes.includes(user?._id || ''));
   const [likeCount, setLikeCount] = useState(project.likeCount);
@@ -114,7 +116,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+      className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300`}
     >
       {/* Header */}
       <div className="p-6">
@@ -134,8 +136,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               )}
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100">{project.user.name}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <h3 className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{project.user.name}</h3>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                 {new Date(project.createdAt).toLocaleDateString()}
               </p>
             </div>
@@ -149,7 +151,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Title and Description */}
         <div className="mb-2">
           <div className="flex items-center space-x-2 mb-2">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 line-clamp-2 flex-1">
+            <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} line-clamp-2 flex-1`}>
               {project.title}
             </h2>
             {project.projectUrl && (
@@ -159,7 +161,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               </span>
             )}
           </div>
-          <p className="text-gray-600 dark:text-gray-400 line-clamp-3">
+          <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} line-clamp-3`}>
             {project.description}
           </p>
         </div>
@@ -170,13 +172,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             {project.technologies.slice(0, 3).map((tech, idx) => (
               <span
                 key={idx}
-                className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium"
+                className={`${theme === 'dark' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'} px-2 py-1 rounded text-xs font-medium`}
               >
                 {tech}
               </span>
             ))}
             {project.technologies.length > 3 && (
-              <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+              <span className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-100 text-gray-600'} px-2 py-1 rounded text-xs`}>
                 +{project.technologies.length - 3} more
               </span>
             )}
@@ -186,11 +188,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Team Info */}
         {project.teamMemberCount > 0 && (
           <div className="mb-4">
-            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className={`flex items-center space-x-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               <Users className="w-4 h-4" />
               <span>{project.teamMemberCount} team member{project.teamMemberCount !== 1 ? 's' : ''}</span>
               {project.pendingTeamRequestsCount > 0 && (
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                <span className={`${theme === 'dark' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'} px-2 py-1 rounded text-xs`}>
                   {project.pendingTeamRequestsCount} pending request{project.pendingTeamRequestsCount !== 1 ? 's' : ''}
                 </span>
               )}
@@ -207,18 +209,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               onClick={handleLike}
               className={`flex items-center space-x-1 text-sm transition-colors ${
                 isLiked 
-                  ? 'text-red-500 hover:text-red-600' 
-                  : 'text-gray-500 hover:text-red-500'
+                  ? `${theme === 'dark' ? 'text-green-500 hover:text-green-600' : 'text-red-500 hover:text-red-600'}` 
+                  : `${theme === 'dark' ? 'text-gray-400 hover:text-green-500' : 'text-gray-500 hover:text-red-500'}`
               }`}
             >
               <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
               <span>{likeCount}</span>
             </button>
-            <div className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400">
+            <div className={`flex items-center space-x-1 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
               <MessageCircle className="w-4 h-4" />
               <span>{project.commentCount}</span>
             </div>
-            <div className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400">
+            <div className={`flex items-center space-x-1 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
               <Eye className="w-4 h-4" />
               <span>{project.likes.length}</span>
             </div>
@@ -227,7 +229,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             {isOwner && onEdit && (
               <button
                 onClick={handleEdit}
-                className="text-gray-500 hover:text-purple-600 transition-colors"
+                className={`${theme === 'dark' ? 'text-gray-400 hover:text-green-600' : 'text-gray-500 hover:text-purple-600'} transition-colors`}
                 title="Edit Project"
               >
                 <Edit className="w-5 h-5" />
@@ -236,7 +238,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             {canRequestToJoin && (
               <button
                 onClick={handleTeamRequest}
-                className="text-blue-500 hover:text-blue-700 transition-colors"
+                className={`${theme === 'dark' ? 'text-green-500 hover:text-green-600' : 'text-blue-500 hover:text-blue-700'} transition-colors`}
                 title="Request to Join Team"
               >
                 <UserPlus className="w-5 h-5" />
@@ -244,7 +246,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             )}
             <button
               onClick={handlePreview}
-              className="text-gray-500 hover:text-blue-600 transition-colors"
+              className={`${theme === 'dark' ? 'text-gray-400 hover:text-green-600' : 'text-gray-500 hover:text-blue-600'} transition-colors`}
               title="Preview Project"
             >
               <Globe className="w-5 h-5" />
@@ -253,7 +255,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-gray-700 transition-colors"
+              className={`${theme === 'dark' ? 'text-gray-400 hover:text-green-600' : 'text-gray-500 hover:text-gray-700'} transition-colors`}
               title="View on GitHub"
             >
               <Github className="w-5 h-5" />
@@ -263,7 +265,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 href={project.projectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-700 transition-colors"
+                className={`${theme === 'dark' ? 'text-green-500 hover:text-green-600' : 'text-blue-500 hover:text-blue-700'} transition-colors`}
                 title="View Live Demo"
               >
                 <ExternalLink className="w-5 h-5" />
@@ -271,7 +273,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             )}
             <Link
               to={`/projects/${project._id}`}
-              className="text-purple-600 hover:text-purple-700 transition-colors"
+                className={`${theme === 'dark' ? 'text-green-600 hover:text-green-700' : 'text-purple-600 hover:text-purple-700'} transition-colors`}
               title="View Project Details"
             >
               <Eye className="w-5 h-5" />
@@ -287,7 +289,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+              className={`fixed inset-0 ${theme === 'dark' ? 'bg-gray-900 bg-opacity-50' : 'bg-black bg-opacity-50'} flex items-center justify-center p-4 z-50`}
             onClick={() => setShowPreview(false)}
           >
             <motion.div

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../Contexts/ThemeContext';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -22,7 +23,8 @@ import { PrivateProfile } from '../components/PrivateProfile';
 import { ConnectionsOnlyProfile } from '../components/ConnectionsOnlyProfile';
 
 export const ProfilePage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { theme } = useTheme();
+    const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { userId } = useParams();
   const [profile, setProfile] = useState<User | null>(null);
@@ -154,16 +156,16 @@ export const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} py-8`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8"
+          className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg overflow-hidden mb-8`}
         >
           <div
-            className="h-36 bg-gradient-to-r from-purple-600 to-blue-600 relative"
+            className={`h-36 ${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'} relative`}
             style={{
               backgroundImage: profile.backgroundPicture ? `url(${profile.backgroundPicture})` : undefined,
               backgroundSize: 'cover',
@@ -171,12 +173,12 @@ export const ProfilePage: React.FC = () => {
             }}
           >
             {!profile.backgroundPicture && (
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-90" />
+              <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'} opacity-90`} />
             )}
           </div>
           <div className="relative px-8 pb-8">
             <div className="flex flex-col sm:flex-row items-start space-y-2 sm:space-y-0 sm:space-x-6 mt-8">
-              <div className={`w-32 h-32 ${profile.profilePicture ? 'bg-white' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-2xl shadow-lg flex items-center justify-center border-4 border-white overflow-hidden`}>
+              <div className={`w-32 h-32 ${profile.profilePicture ? 'bg-white' : `${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'}`} rounded-2xl shadow-lg flex items-center justify-center border-4 border-white overflow-hidden`}>
                 {profile.profilePicture ? (
                   <img
                     src={profile.profilePicture}
@@ -193,7 +195,7 @@ export const ProfilePage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className='flex  items-center justify-center gap-2'>
-                      <h1 className="text-2xl font-bold text-gray-900 cursor-default ">
+                      <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} cursor-default `}>
                         {profile.name || profile.username}
                       </h1>
                       <h1 className='mt-1 '>
@@ -203,22 +205,22 @@ export const ProfilePage: React.FC = () => {
                           (<p className='text-gray-400 italic cursor-default'>(not verified)</p>)}
                       </h1>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
                       {profile.bio || 'No bio available'}
                     </p>
                     {(profile.city || profile.country) && (
-                      <p className="text-gray-500 dark:text-gray-500 mt-2">
+                      <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mt-2`}>
                         📍 {[profile.city, profile.country].filter(Boolean).join(', ')}
                       </p>
                     )}
                   </div>
-                  <Link
+                  {/* <Link
                     to="/profile/edit"
-                    className="mt-4 sm:mt-0 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+                    className={`mt-4 sm:mt-0 ${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'} px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2`}
                   >
                     <Edit3 className="w-4 h-4" />
                     <span>Edit Profile</span>
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>
@@ -238,23 +240,23 @@ export const ProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl shadow-lg p-8"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-8`}
             >
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">About</h2>
-              <p className="text-gray-600">{profile.bio || 'No bio available'}</p>
+              <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>About</h2>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{profile.bio || 'No bio available'}</p>
             </motion.div>
 
             {/* Skills */}
             {profile.skills && profile.skills.length > 0 && (
-              <div className="bg-white  rounded-lg shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900  mb-4">
+              <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg p-6`}>
+                <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>
                   Skills
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {profile.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 bg-purple-300 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100 rounded-full text-sm"
+                      className={`px-3 ${theme === 'dark' ? 'bg-green-300 text-green-800' : 'bg-purple-300 text-purple-800'} py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100 rounded-full text-sm`}
                     >
                       {skill}
                     </span>
@@ -265,15 +267,15 @@ export const ProfilePage: React.FC = () => {
 
             {/* Interests */}
             {profile.interests && profile.interests.length > 0 && (
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900  mb-4">
+              <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg p-6`}>
+                <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>
                   Interests
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {profile.interests.map((interest) => (
                     <span
                       key={interest}
-                      className="px-3 py-1  bg-purple-100  text-primary-800 dark:text-primary-100 rounded-full text-sm"
+                      className={`px-3 py-1 ${theme === 'dark' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'} rounded-full text-sm`}
                     >
                       {interest}
                     </span>
@@ -290,23 +292,23 @@ export const ProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-6`}
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Stats</h3>
+              <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Profile Stats</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Eye className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-600">Profile Views</span>
+                    <Eye className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Profile Views</span>
                   </div>
-                  <span className="font-semibold text-gray-900">{profile?.profileViews}</span>
+                  <span className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{profile?.profileViews}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-600">Connections</span>
+                    <Users className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Connections</span>
                   </div>
-                  <span className="font-semibold text-gray-900">{profile?.connections?.length}</span>
+                  <span className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{profile?.connections?.length}</span>
                 </div>
               </div>
             </motion.div>
@@ -316,13 +318,13 @@ export const ProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-6`}
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Details</h3>
+              <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Details</h3>
               <div className="space-y-4">
                 {profile.experience && (
                   <div>
-                    <label className="text-sm text-gray-500 block mb-1">Experience Level</label>
+                    <label className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} block mb-1`}>Experience Level</label>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${experienceColors[profile.experience as keyof typeof experienceColors]}`}>
                       {profile.experience.charAt(0).toUpperCase() + profile.experience.slice(1)}
                     </span>
@@ -330,7 +332,7 @@ export const ProfilePage: React.FC = () => {
                 )}
                 {profile.availability && (
                   <div>
-                    <label className="text-sm text-gray-500 block mb-1">Availability</label>
+                    <label className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} block mb-1`}>Availability</label>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${availabilityColors[profile.availability as keyof typeof availabilityColors]}`}>
                       {profile.availability.charAt(0).toUpperCase() + profile.availability.slice(1)}
                     </span>
@@ -338,10 +340,10 @@ export const ProfilePage: React.FC = () => {
                 )}
                 {profile.lookingFor && profile.lookingFor.length > 0 && (
                   <div>
-                    <label className="text-sm text-gray-500 block mb-2">Looking For</label>
+                    <label className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} block mb-2`}>Looking For</label>
                     <div className="space-y-1">
                       {profile.lookingFor.map((item, index) => (
-                        <div key={index} className="text-sm text-gray-700">
+                        <div key={index} className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>
                           • {item.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </div>
                       ))}
@@ -357,16 +359,16 @@ export const ProfilePage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white rounded-2xl shadow-lg p-8"
+                className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-8`}
               >
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Links</h2>
+                <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Links</h2>
                 <div className="space-y-4">
                   {profile.github && (
                     <a
                       href={profile.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                      className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-400 hover:text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
                     >
                       <Github className="w-5 h-5" />
                       <span>GitHub</span>
@@ -377,7 +379,7 @@ export const ProfilePage: React.FC = () => {
                       href={profile.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                      className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-400 hover:text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
                     >
                       <Linkedin className="w-5 h-5" />
                       <span>LinkedIn</span>
@@ -388,7 +390,7 @@ export const ProfilePage: React.FC = () => {
                       href={profile.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                        className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-400 hover:text-green-600' : 'text-gray-600 hover:text-green-900'}`}
                     >
                       <Globe className="w-5 h-5" />
                       <span>Website</span>
@@ -401,10 +403,10 @@ export const ProfilePage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white rounded-2xl shadow-lg p-8"
+                    className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-8`}
               >
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Links</h2>
-                <div className='space-y-4 text-gray-400 italic'>
+                <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Links</h2>
+                <div className={`space-y-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} italic`}>
                   Not provided
                 </div>
 

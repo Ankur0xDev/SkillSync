@@ -265,7 +265,7 @@ export const DashboardPage: React.FC = () => {
                 <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Recent Connections</h2>
                 <Link
                   to="/connections"
-                  className="text-purple-600 hover:text-purple-700 font-medium flex items-center space-x-1"
+                  className={`${theme === 'dark' ? 'text-green-600 hover:text-green-700' : 'text-purple-600 hover:text-purple-700'} font-medium flex items-center space-x-1`}
                 >
                   <span>View All</span>
                   <ArrowRight className="w-4 h-4" />
@@ -278,7 +278,7 @@ export const DashboardPage: React.FC = () => {
                   <p className="text-gray-500 mb-4">No connections yet</p>
                   <Link
                     to="/matches"
-                    className="text-purple-600 hover:text-purple-700 font-medium"
+                    className={`${theme === 'dark' ? 'text-green-600 hover:text-green-700' : 'text-purple-600 hover:text-purple-700'} font-medium`}
                   >
                     Find your first match
                   </Link>
@@ -288,7 +288,7 @@ export const DashboardPage: React.FC = () => {
                   {recentConnections.map((connection) => (
                     <div
                       key={connection._id}
-                      className={`flex items-center space-x-4 p-4 ${theme === 'dark' ? 'border border-gray-700' : 'border border-gray-200'} rounded-lg hover:bg-gray-50 transition-colors`}
+                      className={`flex items-center space-x-4 p-4 ${theme === 'dark' ? 'border border-gray-700 bg-gray-800 hover:bg-gray-700' : 'border border-gray-200 bg-white hover:bg-gray-50'} rounded-lg  transition-colors`}
                     >
                       <div className={`w-12 h-12 ${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-full flex items-center justify-center`}>
                         <span className="text-white font-medium">
@@ -380,7 +380,7 @@ export const DashboardPage: React.FC = () => {
                   ))}
                   <Link
                     to="/connections"
-                    className="block text-center text-purple-600 hover:text-purple-700 font-medium text-sm"
+                      className={`block text-center ${theme === 'dark' ? 'text-green-600 hover:text-green-700' : 'text-purple-600 hover:text-purple-700'} font-medium text-sm`}
                   >
                     View All Requests
                   </Link>
@@ -404,7 +404,7 @@ export const DashboardPage: React.FC = () => {
               </p>
               <Link
                 to="/profile/edit"
-                className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-purple-600'} px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-50 transition-colors inline-block`}
+                className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100 ' : 'bg-white text-purple-600 '} hover:bg-purple-500 px-4 py-2 rounded-lg text-sm font-medium  transition-colors inline-block`}
               >
                 Edit Profile
               </Link>

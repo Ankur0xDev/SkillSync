@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../Contexts/ThemeContext';
 import { 
   Users, 
   TrendingUp, 
@@ -67,6 +68,7 @@ interface ActiveUser {
 // }
 
 export const CommunityPage: React.FC = () => {
+  const { theme } = useTheme();
   // const { user } = useAuth();
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [trendingTopics, setTrendingTopics] = useState<TrendingTopic[]>([]);
@@ -132,7 +134,7 @@ export const CommunityPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} py-8`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -142,22 +144,22 @@ export const CommunityPage: React.FC = () => {
         >
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Users className="w-8 h-8 text-purple-600" />
-            <h1 className="text-4xl font-bold text-gray-900">Community</h1>
+            <h1 className={`text-4xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Community</h1>
           </div>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className={`text-xl ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mb-8`}>
             Connect with developers, share ideas, and stay updated with the latest trends
           </p>
 
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className={`${theme === 'dark' ? 'text-gray-400' : 'text-white'} absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5`} />
               <input
                 type="text"
                 placeholder="Search posts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className={`w-full pl-10 pr-4 py-3 border ${theme === 'dark' ? 'border-gray-700 text-white' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
               />
             </div>
           </div>
@@ -167,15 +169,15 @@ export const CommunityPage: React.FC = () => {
           {/* Main Content - Posts */}
           <div className={`${showChat ? 'lg:col-span-2' : 'lg:col-span-3'} space-y-6`}>
             {/* Trending Topics */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm p-6`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-5 h-5 text-purple-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">Trending Topics</h2>
+                  <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Trending Topics</h2>
                 </div>
                 <button
                   onClick={() => setShowChat(!showChat)}
-                  className="flex items-center space-x-2 text-purple-600 hover:text-purple-700"
+                  className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-green-600 hover:text-green-700' : 'text-purple-600 hover:text-purple-700'}`}
                 >
                   <MessageSquare className="w-5 h-5" />
                   <span>{showChat ? 'Hide Chat' : 'Show Chat'}</span>
@@ -189,8 +191,8 @@ export const CommunityPage: React.FC = () => {
                     onClick={() => setSelectedTopic(selectedTopic === topic.tag ? null : topic.tag)}
                     className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                       selectedTopic === topic.tag
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                        ? `${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'}`
+                        : `${theme === 'dark' ? 'bg-gray-700 text-gray-100 hover:bg-gray-600' : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}`
                     }`}
                   >
                     #{topic.tag} ({topic.count})
@@ -207,7 +209,7 @@ export const CommunityPage: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-xl shadow-sm p-6"
+                  className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm p-6`}
                 >
                   <div className="flex items-start space-x-4">
                     <Link to={`/profile/${post.user._id}`} className="flex-shrink-0">
@@ -229,7 +231,7 @@ export const CommunityPage: React.FC = () => {
                       <div className="flex items-center justify-between mb-2">
                         <Link
                           to={`/profile/${post.user._id}`}
-                          className="font-medium text-gray-900 hover:text-purple-600"
+                          className={`font-medium ${theme === 'dark' ? 'text-gray-100 hover:text-green-600' : 'text-gray-900 hover:text-purple-600'}`}
                         >
                           {post.user.name}
                         </Link>
@@ -237,27 +239,27 @@ export const CommunityPage: React.FC = () => {
                           {new Date(post.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-gray-700 mb-4">{post.content}</p>
+                      <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-4`}>{post.content}</p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {post.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium"
+                            className={`px-2 py-1 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-100 text-purple-800'} rounded text-xs font-medium`}
                           >
                             #{tag}
                           </span>
                         ))}
                       </div>
-                      <div className="flex items-center space-x-6 text-gray-500">
-                        <button className="flex items-center space-x-1 hover:text-purple-600">
+                      <div className={`flex items-center space-x-6 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
+                        <button className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-600' : 'hover:text-purple-600'}`}>
                           <Heart className="w-4 h-4" />
                           <span>{post.likes}</span>
                         </button>
-                        <button className="flex items-center space-x-1 hover:text-purple-600">
+                        <button className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-600' : 'hover:text-purple-600'}`}>
                           <MessageSquare className="w-4 h-4" />
                           <span>{post.comments}</span>
                         </button>
-                        <button className="flex items-center space-x-1 hover:text-purple-600">
+                        <button className={`flex items-center space-x-1 ${theme === 'dark' ? 'hover:text-green-600' : 'hover:text-purple-600'}`}>
                           <Share2 className="w-4 h-4" />
                           <span>{post.shares}</span>
                         </button>
@@ -274,12 +276,12 @@ export const CommunityPage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="lg:col-span-1 bg-white rounded-xl shadow-sm overflow-hidden flex flex-col h-[calc(100vh-12rem)]"
+              className={`lg:col-span-1 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm overflow-hidden flex flex-col h-[calc(100vh-12rem)]`}
             >
               {/* Chat Header */}
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Community Chat</h3>
-                <p className="text-sm text-gray-500">Global Room</p>
+              <div className={`p-4 ${theme === 'dark' ? 'border-b border-gray-700' : 'border-b border-gray-200'}`}>
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Community Chat</h3>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>Global Room</p>
               </div>
 
               {/* Messages Container */}
@@ -288,19 +290,19 @@ export const CommunityPage: React.FC = () => {
               </div>
 
               {/* Message Input */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200">
+              <form onSubmit={handleSendMessage} className={`p-4 ${theme === 'dark' ? 'border-t border-gray-700' : 'border-t border-gray-200'}`}>
                 <div className="flex space-x-2">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type a message..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className={`flex-1 px-4 py-2 border ${theme === 'dark' ? 'border-gray-700 text-white' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                   />
                   <button
                     type="submit"
                     disabled={!newMessage.trim()}
-                    className="bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'} p-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <Send className="w-5 h-5" />
                   </button>
@@ -313,17 +315,17 @@ export const CommunityPage: React.FC = () => {
           {!showChat && (
             <div className="space-y-6">
               {/* Active Users */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm p-6`}>
                 <div className="flex items-center space-x-2 mb-4">
                   <Star className="w-5 h-5 text-purple-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">Active Users</h2>
+                  <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Active Users</h2>
                 </div>
                 <div className="space-y-4">
                   {activeUsers.map((user) => (
                     <Link
                       key={user._id}
                       to={`/profile/${user._id}`}
-                      className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50"
+                      className={`flex items-center space-x-3 p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}
                     >
                       <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center">
                         {user.profilePicture ? (
@@ -339,10 +341,10 @@ export const CommunityPage: React.FC = () => {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} truncate`}>
                           {user.name}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-100' : 'text-gray-500'}`}>
                           {user.postCount} posts • Active recently
                         </p>
                       </div>
@@ -352,24 +354,24 @@ export const CommunityPage: React.FC = () => {
               </div>
 
               {/* Community Stats */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Community Stats</h2>
+              <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm p-6`}>
+                <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Community Stats</h2>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-purple-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Total Posts</p>
-                    <p className="text-2xl font-bold text-purple-600">{posts.length}</p>
+                  <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-purple-50'} rounded-lg p-4`}>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>Total Posts</p>
+                    <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-green-600' : 'text-purple-600'}`}>{posts.length}</p>
                   </div>
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Active Users</p>
-                    <p className="text-2xl font-bold text-blue-600">{activeUsers.length}</p>
+                  <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-blue-50'} rounded-lg p-4`}>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>Active Users</p>
+                    <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-green-600' : 'text-blue-600'}`}>{activeUsers.length}</p>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Trending Topics</p>
-                    <p className="text-2xl font-bold text-green-600">{trendingTopics.length}</p>
+                  <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-green-50'} rounded-lg p-4`}>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>Trending Topics</p>
+                    <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-green-600' : 'text-green-600'}`}>{trendingTopics.length}</p>
                   </div>
-                  <div className="bg-yellow-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Total Interactions</p>
-                    <p className="text-2xl font-bold text-yellow-600">
+                    <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-yellow-50'} rounded-lg p-4`}>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'}`}>Total Interactions</p>
+                    <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-green-600' : 'text-yellow-600'}`}>
                       {posts.reduce((sum, post) => sum + post.likes + post.comments + post.shares, 0)}
                     </p>
                   </div>

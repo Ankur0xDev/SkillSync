@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  HelpCircle, 
-  Search, 
-  ChevronDown, 
+import { useTheme } from '../Contexts/ThemeContext';
+import {
+  HelpCircle,
+  Search,
+  ChevronDown,
   ChevronUp,
   Mail,
   MessageCircle,
@@ -81,13 +82,14 @@ const helpTopics = [
 ];
 
 export const HelpCenterPage: React.FC = () => {
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredFaqs = faqs.filter(faq => {
     const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = !selectedCategory || faq.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -95,7 +97,7 @@ export const HelpCenterPage: React.FC = () => {
   const categories = Array.from(new Set(faqs.map(faq => faq.category)));
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} py-12`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -105,22 +107,22 @@ export const HelpCenterPage: React.FC = () => {
         >
           <div className="flex items-center justify-center space-x-2 mb-4">
             <HelpCircle className="w-8 h-8 text-purple-600" />
-            <h1 className="text-4xl font-bold text-gray-900">Help Center</h1>
+            <h1 className={`text-4xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Help Center</h1>
           </div>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className={`text-xl ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mb-8`}>
             Find answers to common questions and learn how to use our platform
           </p>
 
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className={`${theme === 'dark' ? 'text-gray-400' : 'text-white'} absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5`} />
               <input
                 type="text"
                 placeholder="Search for help..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className={`w-full pl-10 pr-4 py-3 border ${theme === 'dark' ? 'border-gray-700 text-white' : 'border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
               />
             </div>
           </div>
@@ -134,14 +136,14 @@ export const HelpCenterPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow`}
             >
-              <div className="text-purple-600 mb-4">{topic.icon}</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{topic.title}</h3>
-              <p className="text-gray-600 text-sm mb-4">{topic.description}</p>
+              <div className={`${theme === 'dark' ? 'text-green-600' : 'text-purple-600'} mb-4`}>{topic.icon}</div>
+              <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-2`}>{topic.title}</h3>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm mb-4`}>{topic.description}</p>
               <RouterLink
                 to={topic.link}
-                className="text-purple-600 hover:text-purple-700 text-sm font-medium flex items-center"
+                className={`${theme === 'dark' ? 'text-green-600 hover:text-green-700' : 'text-purple-600 hover:text-purple-700'} text-sm font-medium flex items-center`}
               >
                 Learn more
                 <ChevronDown className="w-4 h-4 ml-1" />
@@ -151,18 +153,17 @@ export const HelpCenterPage: React.FC = () => {
         </div>
 
         {/* FAQs */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
-          
+        <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm p-6 mb-12`}>
+          <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Frequently Asked Questions</h2>
+
           {/* Category Filters */}
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 rounded-full text-sm font-medium ${
-                !selectedCategory
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium ${!selectedCategory
+                  ? `${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'}`
+                  : `${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`
+                }`}
             >
               All
             </button>
@@ -170,11 +171,10 @@ export const HelpCenterPage: React.FC = () => {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  selectedCategory === category
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`px-4 py-2 rounded-full text-sm font-medium ${selectedCategory === category
+                    ? `${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'}`
+                    : `${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`
+                  }`}
               >
                 {category}
               </button>
@@ -190,9 +190,9 @@ export const HelpCenterPage: React.FC = () => {
               >
                 <button
                   onClick={() => setExpandedFaq(expandedFaq === faq.question ? null : faq.question)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50"
+                  className={`w-full px-6 py-4 text-left flex items-center justify-between ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}
                 >
-                  <span className="font-medium text-gray-900">{faq.question}</span>
+                  <span className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{faq.question}</span>
                   {expandedFaq === faq.question ? (
                     <ChevronUp className="w-5 h-5 text-gray-500" />
                   ) : (
@@ -200,8 +200,8 @@ export const HelpCenterPage: React.FC = () => {
                   )}
                 </button>
                 {expandedFaq === faq.question && (
-                  <div className="px-6 py-4 bg-gray-50">
-                    <p className="text-gray-600">{faq.answer}</p>
+                  <div className={`px-6 py-4 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                    <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{faq.answer}</p>
                   </div>
                 )}
               </div>
@@ -210,27 +210,33 @@ export const HelpCenterPage: React.FC = () => {
         </div>
 
         {/* Contact Support */}
-        <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-8 text-white">
+        <div className={`${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-xl p-8 text-white`}>
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl font-bold mb-4">Still Need Help?</h2>
-            <p className="text-lg mb-8 opacity-90">
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>Still Need Help?</h2>
+            <p className={`text-lg ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'} mb-8 opacity-90`}>
               Our support team is here to help you with any questions or issues you may have.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a
-                href="mailto:support@skillsync.com"
-                className="flex items-center justify-center space-x-2 bg-white text-purple-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+                href="mailto:ankurgrewal07@gmail.com?subject=Support%20Request&body=Hi%20SkillSync%20team,"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center justify-center space-x-2 ${theme === 'dark'
+                    ? 'bg-gray-700 text-gray-100 hover:bg-gray-600'
+                    : 'bg-white text-purple-600 hover:bg-purple-500 hover:text-white'
+                  } px-6 py-3 rounded-lg transition-colors`}
               >
                 <Mail className="w-5 h-5" />
                 <span>Email Support</span>
               </a>
-              <a
+
+              {/* <a
                 href="#"
-                className="flex items-center justify-center space-x-2 bg-white/10 text-white px-6 py-3 rounded-lg hover:bg-white/20 transition-colors"
+                className={`flex items-center justify-center space-x-2 ${theme === 'dark' ? 'bg-white/10 text-white' : 'bg-white/10 text-white'} px-6 py-3 rounded-lg hover:bg-white/20 transition-colors`}
               >
                 <MessageCircle className="w-5 h-5" />
                 <span>Live Chat</span>
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
