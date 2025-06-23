@@ -1,6 +1,7 @@
 import express from 'express';
 import User from '../models/user.js';
 import { auth } from '../middleware/auth.js';
+import { sendEmailNotification } from '../utils/email.js';
 
 const router = express.Router();
 
@@ -47,6 +48,19 @@ router.post('/send/:userId', auth, async (req, res) => {
     await User.findByIdAndUpdate(userId, {
       $push: { receivedRequests: currentUserId }
     });
+
+    // Send email notification to recipient if enabled
+    try {
+      if (targetUser.notificationSettings?.emailNotifications) {
+        await sendEmailNotification({
+          to: targetUser.email,
+          subject: 'New Connection Request',
+          text: `You have received a new connection request from ${currentUser.name}. Please review it in your dashboard.`
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send connection request notification email:', err);
+    }
 
     res.json({ message: 'Connection request sent successfully' });
   } catch (error) {

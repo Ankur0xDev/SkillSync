@@ -903,6 +903,31 @@ router.put('/change-email', auth, [
   }
 });
 
+// Update notification settings
+router.put('/notification-settings', auth, [
+  body('emailNotifications').isBoolean().withMessage('emailNotifications must be a boolean'),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+    const { emailNotifications } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { 'notificationSettings.emailNotifications': emailNotifications },
+      { new: true }
+    ).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'Notification settings updated', notificationSettings: user.notificationSettings });
+  } catch (error) {
+    console.error('Update notification settings error:', error);
+    res.status(500).json({ message: 'Server error while updating notification settings' });
+  }
+});
+
 // router.post('/resend-otp',[
 //   body('email').isEmail().withMessage('Please Enter a valid email'),
 // ],async (req,res)=>{

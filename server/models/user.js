@@ -190,6 +190,13 @@ const userSchema = new mongoose.Schema({
       type: Boolean,
       default: true
     }
+  },
+  // Notification settings
+  notificationSettings: {
+    emailNotifications: {
+      type: Boolean,
+      default: true
+    }
   }
 }, {
   timestamps: true

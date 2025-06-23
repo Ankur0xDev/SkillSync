@@ -3,6 +3,7 @@ import { body, validationResult } from 'express-validator';
 import { auth, optionalAuth } from '../middleware/auth.js';
 import Project from '../models/Project.js';
 import User from '../models/user.js';
+import { sendEmailNotification } from '../utils/email.js';
 
 const router = express.Router();
 
@@ -111,7 +112,7 @@ router.post('/', auth, [
       maxTeamSize
     } = req.body;
 
-    console.log('Extracted data:', { title, description, githubUrl, projectUrl, technologies, status, isPublic, allowTeamRequests, maxTeamSize });
+    // console.log('Extracted data:', { title, description, githubUrl, projectUrl, technologies, status, isPublic, allowTeamRequests, maxTeamSize });
 
     const project = new Project({
       user: req.user._id,
@@ -139,10 +140,22 @@ router.post('/', auth, [
     await project.save();
 
     const populatedProject = await Project.findById(project._id)
-      .populate('user', 'name profilePicture')
-      .populate('teamMembers.user', 'name profilePicture');
+      .populate('user', 'name profilePicture email notificationSettings');
 
     console.log('Project created successfully:', populatedProject);
+    // Send email notification to owner
+    try {
+      const owner = populatedProject.user;
+      if (owner && owner.notificationSettings?.emailNotifications) {
+        await sendEmailNotification({
+          to: owner.email,
+          subject: 'Project Created',
+          text: `Your project "${populatedProject.title}" was created successfully.`
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send project created email:', err);
+    }
     res.status(201).json(populatedProject);
   } catch (error) {
     console.error('Create project error:', error);
@@ -178,8 +191,21 @@ router.put('/:id', auth, [
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    ).populate('user', 'name profilePicture');
+    ).populate('user', 'name profilePicture email notificationSettings');
 
+    // Send email notification to owner
+    try {
+      const owner = updatedProject.user;
+      if (owner && owner.notificationSettings?.emailNotifications) {
+        await sendEmailNotification({
+          to: owner.email,
+          subject: 'Project Updated',
+          text: `Your project "${updatedProject.title}" was updated.`
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send project updated email:', err);
+    }
     res.json(updatedProject);
   } catch (error) {
     console.error('Update project error:', error);
@@ -190,16 +216,27 @@ router.put('/:id', auth, [
 // Delete project
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id);
+    const project = await Project.findById(req.params.id).populate('user', 'name email notificationSettings');
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
-
     if (project.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized' });
     }
-
     await Project.findByIdAndDelete(req.params.id);
+    // Send email notification to owner
+    try {
+      const owner = project.user;
+      if (owner && owner.notificationSettings?.emailNotifications) {
+        await sendEmailNotification({
+          to: owner.email,
+          subject: 'Project Deleted',
+          text: `Your project "${project.title}" was deleted.`
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send project deleted email:', err);
+    }
     res.json({ message: 'Project deleted successfully' });
   } catch (error) {
     console.error('Delete project error:', error);
@@ -296,6 +333,20 @@ router.post('/:id/team-request', auth, [
 
     await project.save();
 
+    // Send email notification to project owner if enabled
+    try {
+      const owner = await User.findById(project.user);
+      if (owner && owner.notificationSettings?.emailNotifications) {
+        await sendEmailNotification({
+          to: owner.email,
+          subject: 'New Team Join Request',
+          text: `You have a new team join request for your project "${project.title}". Please review it in your dashboard.`
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send team join notification email:', err);
+    }
+
     const populatedProject = await Project.findById(req.params.id)
       .populate('teamRequests.user', 'name profilePicture')
       .populate('teamMembers.user', 'name profilePicture');
@@ -370,6 +421,20 @@ router.post('/:id/team-requests/:requestId/accept', auth, async (req, res) => {
 
     await project.save();
 
+    // Send email notification to new member
+    try {
+      const newMember = await User.findById(request.user);
+      if (newMember && newMember.notificationSettings?.emailNotifications) {
+        await sendEmailNotification({
+          to: newMember.email,
+          subject: 'Added to Project',
+          text: `You have been added to the project "${project.title}" as a team member.`
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send add member email:', err);
+    }
+
     const populatedProject = await Project.findById(req.params.id)
       .populate('teamRequests.user', 'name profilePicture')
       .populate('teamMembers.user', 'name profilePicture');
@@ -441,9 +506,24 @@ router.delete('/:id/team-members/:memberId', auth, async (req, res) => {
     }
 
     // Remove team member
+    const removedMemberId = project.teamMembers[memberIndex].user;
     project.teamMembers.splice(memberIndex, 1);
 
     await project.save();
+
+    // Send email notification to removed member
+    try {
+      const removedMember = await User.findById(removedMemberId);
+      if (removedMember && removedMember.notificationSettings?.emailNotifications) {
+        await sendEmailNotification({
+          to: removedMember.email,
+          subject: 'Removed from Project',
+          text: `You have been removed from the project "${project.title}".`
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send remove member email:', err);
+    }
 
     const populatedProject = await Project.findById(req.params.id)
       .populate('teamRequests.user', 'name profilePicture')

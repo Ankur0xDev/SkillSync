@@ -7,6 +7,7 @@ import User from "../models/user.js";
 // import nodemailer from 'nodemailer';
 
 import { auth } from "../middleware/auth.js";
+import { sendEmailNotification } from '../utils/email.js';
 
 const router = express.Router();
 
@@ -221,6 +222,19 @@ router.post(
 
       // Generate token
       const token = generateToken(user._id);
+
+      // Send login notification email if enabled
+      try {
+        if (user.notificationSettings?.emailNotifications) {
+          await sendEmailNotification({
+            to: user.email,
+            subject: 'New Login Detected',
+            text: `Your account was just logged in from a new device or location. If this wasn't you, please secure your account immediately.`
+          });
+        }
+      } catch (err) {
+        console.error('Failed to send login notification email:', err);
+      }
 
       res.json({
         message: "Login successful",
