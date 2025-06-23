@@ -241,7 +241,7 @@ export const ProjectDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -249,7 +249,7 @@ export const ProjectDetailPage: React.FC = () => {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Project not found</h2>
           <Link to="/projects" className="text-purple-600 hover:text-purple-700">

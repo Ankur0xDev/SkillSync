@@ -43,7 +43,7 @@ interface Filters {
   lookingFor: string[];
 }
 
-export const SearchPage: React.FC = () => {
+  export const SearchPage: React.FC = () => {
   const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -220,6 +220,13 @@ export const SearchPage: React.FC = () => {
     return colors[availability as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
+  if (loading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
   return (
     <div className={`${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} min-h-screen`}>
       {/* Header */}

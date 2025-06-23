@@ -164,7 +164,7 @@ export const ProjectsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <LoadingSpinner size="lg" />
       </div>
     );

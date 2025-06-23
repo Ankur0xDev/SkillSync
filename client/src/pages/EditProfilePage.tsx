@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Save, X, Plus, ArrowLeft, Camera } from 'lucide-react';
 import { useAuth } from '../Contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { useTheme } from '../Contexts/ThemeContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -26,6 +27,7 @@ interface ProfileData {
 
 export const EditProfilePage: React.FC = () => {
   const {  updateUser } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -245,7 +247,7 @@ export const EditProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} py-8`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -255,13 +257,13 @@ export const EditProfilePage: React.FC = () => {
         >
           <button
             onClick={() => navigate('/profile')}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4"
+            className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'} hover:text-gray-900 mb-4`}
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Profile</span>
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Profile</h1>
-          <p className="text-gray-600 mt-2">Update your information to help others find you</p>
+          <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Edit Profile</h1>
+          <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-600'} mt-2`}>Update your information to help others find you</p>
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -270,14 +272,14 @@ export const EditProfilePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+            className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-8`}
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile Pictures</h2>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Profile Pictures</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Profile Picture */}
               <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Profile Picture</label>
                 <div className="relative">
                   <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                     {formData.profilePicture ? (
@@ -291,7 +293,7 @@ export const EditProfilePage: React.FC = () => {
                     )}
                   </div>
                   <div className="mt-4 flex space-x-2">
-                    <label className="cursor-pointer bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    <label className={`cursor-pointer ${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors`}>
                       <input
                         type="file"
                         className="hidden"
@@ -304,7 +306,7 @@ export const EditProfilePage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleImageRemove('profilePicture')}
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                        className={`${theme === 'dark' ? 'bg-red-600 text-white' : 'bg-red-600 text-white'} px-4 py-2 rounded-lg hover:bg-red-700 transition-colors`}
                       >
                         Remove
                       </button>
@@ -315,7 +317,7 @@ export const EditProfilePage: React.FC = () => {
 
               {/* Background Picture */}
               <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700">Background Picture</label>
+                <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>Background Picture</label>
                 <div className="relative">
                   <div className="w-full h-32 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                     {formData.backgroundPicture ? (
@@ -329,7 +331,7 @@ export const EditProfilePage: React.FC = () => {
                     )}
                   </div>
                   <div className="mt-4 flex space-x-2">
-                    <label className="cursor-pointer bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    <label className={`cursor-pointer ${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors`}>
                       <input
                         type="file"
                         className="hidden"
@@ -342,7 +344,7 @@ export const EditProfilePage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleImageRemove('backgroundPicture')}
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                        className={`${theme === 'dark' ? 'bg-red-600 text-white' : 'bg-red-600 text-white'} px-4 py-2 rounded-lg hover:bg-red-700 transition-colors`}
                       >
                         Remove
                       </button>
@@ -358,12 +360,12 @@ export const EditProfilePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+            className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-8`}
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Basic Information</h2>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="name" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Full Name *
                 </label>
                 <input
@@ -373,11 +375,11 @@ export const EditProfilePage: React.FC = () => {
                   required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-700'}`}
                 />
               </div>
               <div>
-                <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="country" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Country
                 </label>
                 <input
@@ -386,11 +388,11 @@ export const EditProfilePage: React.FC = () => {
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
                 />
               </div>
               <div>
-                <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="city" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   City
                 </label>
                 <input
@@ -399,12 +401,12 @@ export const EditProfilePage: React.FC = () => {
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
                 />
               </div>
             </div>
             <div className="mt-6">
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="bio" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Bio
               </label>
               <textarea
@@ -414,7 +416,7 @@ export const EditProfilePage: React.FC = () => {
                 value={formData.bio}
                 onChange={handleInputChange}
                 placeholder="Tell others about yourself, your interests, and what you're looking for..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
               />
             </div>
           </motion.div>
@@ -424,20 +426,20 @@ export const EditProfilePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+            className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-8`}
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Skills</h2>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Skills</h2>
             <div className="flex flex-wrap gap-2 mb-4">
               {formData.skills.map((skill, index) => (
                 <span
                   key={index}
-                  className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-2"
+                  className={`${theme === 'dark' ? 'bg-purple-100 text-purple-800' : 'bg-purple-100 text-purple-800'} px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-2`}
                 >
                   <span>{skill}</span>
                   <button
                     type="button"
                     onClick={() => removeSkill(skill)}
-                    className="text-purple-600 hover:text-purple-800"
+                    className={`${theme === 'dark' ? 'text-purple-600 hover:text-purple-800' : 'text-purple-600 hover:text-purple-800'}`}
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -451,12 +453,12 @@ export const EditProfilePage: React.FC = () => {
                 onChange={(e) => setNewSkill(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
                 placeholder="Add a skill (e.g., React, Python, Node.js)"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className={`flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
               />
               <button
                 type="button"
                 onClick={addSkill}
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center space-x-1"
+                className={`${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center space-x-1`}
               >
                 <Plus className="w-4 h-4" />
                 <span>Add</span>
@@ -469,20 +471,20 @@ export const EditProfilePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+            className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-8`}
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Interests</h2>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Interests</h2>
             <div className="flex flex-wrap gap-2 mb-4">
               {formData.interests.map((interest, index) => (
                 <span
                   key={index}
-                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-2"
+                  className={`${theme === 'dark' ? 'bg-blue-100 text-blue-800' : 'bg-blue-100 text-blue-800'} px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-2`}
                 >
                   <span>{interest}</span>
                   <button
                     type="button"
                     onClick={() => removeInterest(interest)}
-                    className="text-blue-600 hover:text-blue-800"
+                    className={`${theme === 'dark' ? 'text-blue-600 hover:text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -496,12 +498,12 @@ export const EditProfilePage: React.FC = () => {
                 onChange={(e) => setNewInterest(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addInterest())}
                 placeholder="Add an interest (e.g., Web Development, AI, Mobile Apps)"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className={`flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
               />
               <button
                 type="button"
                 onClick={addInterest}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-1"
+                className={`${theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'} px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-1`}
               >
                 <Plus className="w-4 h-4" />
                 <span>Add</span>
@@ -514,12 +516,12 @@ export const EditProfilePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+            className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-8`}
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Preferences</h2>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Preferences</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="experience" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Experience Level
                 </label>
                 <select
@@ -527,7 +529,7 @@ export const EditProfilePage: React.FC = () => {
                   name="experience"
                   value={formData.experience}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
                 >
                   {experienceOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -537,7 +539,7 @@ export const EditProfilePage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="availability" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="availability" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Availability
                 </label>
                 <select
@@ -545,7 +547,7 @@ export const EditProfilePage: React.FC = () => {
                   name="availability"
                   value={formData.availability}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
                 >
                   {availabilityOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -556,19 +558,19 @@ export const EditProfilePage: React.FC = () => {
               </div>
             </div>
             <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-4">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-4`}>
                 What are you looking for?
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {lookingForOptions.map(option => (
-                  <label key={option.value} className="flex items-center space-x-3">
+                  <label key={option.value} className={`flex items-center space-x-3 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>
                     <input
                       type="checkbox"
                       checked={formData.lookingFor.includes(option.value)}
                       onChange={(e) => handleCheckboxChange(option.value, e.target.checked)}
-                      className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                      className={`w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -580,12 +582,12 @@ export const EditProfilePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+              className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} rounded-2xl shadow-lg p-8`}
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Links</h2>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Links</h2>
             <div className="space-y-4">
               <div>
-                <label htmlFor="github" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="github" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   GitHub Profile
                 </label>
                 <input
@@ -595,11 +597,11 @@ export const EditProfilePage: React.FC = () => {
                   value={formData.github}
                   onChange={handleInputChange}
                   placeholder="https://github.com/yourusername"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
                 />
               </div>
               <div>
-                <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="linkedin" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   LinkedIn Profile
                 </label>
                 <input
@@ -609,11 +611,11 @@ export const EditProfilePage: React.FC = () => {
                   value={formData.linkedin}
                   onChange={handleInputChange}
                   placeholder="https://linkedin.com/in/yourusername"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white'}`}
                 />
               </div>
               <div>
-                <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="website" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                   Personal Website
                 </label>
                 <input
@@ -623,7 +625,7 @@ export const EditProfilePage: React.FC = () => {
                   value={formData.website}
                   onChange={handleInputChange}
                   placeholder="https://yourwebsite.com"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-100 ' : 'bg-white text-gray-700'}`}
                 />
               </div>
             </div>
@@ -639,14 +641,14 @@ export const EditProfilePage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/profile')}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className={`px-6 py-3 border border-gray-300  rounded-lg  transition-colors ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white '}`}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {saving ? (
                 <LoadingSpinner size="sm" />

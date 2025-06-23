@@ -923,7 +923,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                       className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
                         activeTab === tab.id
                           ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          : 'text-gray-300 hover:bg-gray-50 hover:text-gray-900'
                       }`}
                     >
                       <Icon className="w-5 h-5" />

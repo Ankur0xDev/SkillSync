@@ -107,7 +107,7 @@ export const ProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className={`container mx-auto px-4 py-8 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="animate-pulse space-y-4">
           <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
           <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
@@ -127,7 +127,7 @@ export const ProfilePage: React.FC = () => {
 
   if (error || !profile) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className={`container mx-auto px-4 py-8 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="text-red-500 dark:text-red-400">
           {error || 'Profile not found'}
           <button
