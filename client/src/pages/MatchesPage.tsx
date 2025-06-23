@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../Contexts/ThemeContext';
 import {
   Heart,
   X,
@@ -39,7 +40,7 @@ export const MatchesPage: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [message, setMessage] = useState<string | null>(null)
   const [sendingRequest, setSendingRequest] = useState<string | null>(null);
-
+  const { theme } = useTheme();
   useEffect(() => {
     fetchMatches();
   }, []);
@@ -117,7 +118,7 @@ export const MatchesPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} min-h-screen py-8`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -127,15 +128,15 @@ export const MatchesPage: React.FC = () => {
         >
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Sparkles className="w-8 h-8 text-purple-600" />
-            <h1 className="text-4xl font-bold text-gray-900">Perfect Matches</h1>
+            <h1 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-4xl font-bold`}>Perfect Matches</h1>
           </div>
-          <p className="text-xl text-gray-600 mb-6">
+          <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-xl mb-6`}>
             Discover developers who complement your skills and share your interests
           </p>
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 mx-auto"
+            className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 mx-auto`}
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             <span>{refreshing ? 'Refreshing...' : 'Refresh Matches'}</span>
@@ -144,7 +145,7 @@ export const MatchesPage: React.FC = () => {
         {
           message && (
             <div className='flex flex-col items-center gap-5 '>
-              <p className="text-2xl font-bold text-red-600 animate-pulse flex items-center gap-2">
+              <p className={`${theme === 'dark' ? 'text-gray-100' : 'text-red-600'} text-2xl font-bold animate-pulse flex items-center gap-2`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6 text-red-500"
@@ -156,11 +157,11 @@ export const MatchesPage: React.FC = () => {
                 </svg>
                 You have an incomplete profile
               </p>
-              <span className="text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient">
+              <span className={`${theme === 'dark' ? 'text-gray-100' : 'text-purple-600'} text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient`}>
                 {message}
               </span>
 
-              <Link to='/profile/edit' className='text-white cursor-pointer rounded-md p-4 bg-gradient-to-r from-purple-600 to-blue-600 w-max hover::bg-purple-700 '>Edit Profile?</Link>
+              <Link to='/profile/edit' className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} cursor-pointer rounded-md p-4 bg-gradient-to-r from-purple-600 to-blue-600 w-max hover::bg-purple-700 `}>Edit Profile?</Link>
             </div>
           )
         }
@@ -172,14 +173,14 @@ export const MatchesPage: React.FC = () => {
             className="text-center py-16"
           >
             <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">No matches found</h2>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            <h2 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-2xl font-bold mb-4`}>No matches found</h2>
+            <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mb-8 max-w-md mx-auto`}>
               We couldn't find any matches right now. Try updating your profile with more skills and interests,
               or check back later for new members!
             </p>
             <button
               onClick={handleRefresh}
-              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+              className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors`}
             >
               Try Again
             </button>
@@ -192,10 +193,10 @@ export const MatchesPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
+                className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}
               >
                 <div
-                  className="p-6 text-white relative"
+                  className={`p-6 ${theme === 'dark' ? 'text-gray-100' : 'text-white'} relative`}
                   style={{
                     backgroundImage: match.backgroundPicture
                       ? `linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${match.backgroundPicture})`
@@ -206,7 +207,7 @@ export const MatchesPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="relative">
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-white/20">
+                      <div className={`w-16 h-16 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-gray-700' : 'bg-white/20'}`}>
                         {match.profilePicture ? (
                           <img
                             src={match.profilePicture}
@@ -214,31 +215,31 @@ export const MatchesPage: React.FC = () => {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center">
-                            <span className="text-lg font-semibold text-white">
+                          <div className={`w-full h-full ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-800' : 'bg-gradient-to-r from-purple-600 to-blue-600'} flex items-center justify-center`}>
+                            <span className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-white'}`}>
                               {match.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         )}
                       </div>
                       {match.isOnline && (
-                        <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                        <div className={`absolute bottom-0 right-0 w-4 h-4 ${theme === 'dark' ? 'bg-green-500' : 'bg-green-500'} rounded-full border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-white'}`}></div>
                       )}
                     </div>
-                    <div className="flex items-center space-x-1 bg-white/20 px-3 py-1 rounded-full">
+                    <div className={`flex items-center space-x-1 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white/20'} px-3 py-1 rounded-full`}>
                       <Star className="w-4 h-4 text-yellow-300" />
-                      <span className="text-sm font-medium">{match.matchScore}% match</span>
+                      <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{match.matchScore}% match</span>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{match.name}</h3>
-                  <div className="flex items-center space-x-4 text-sm opacity-90">
+                  <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-gray-100' : 'text-white'}`}>{match.name}</h3>
+                  <div className={`flex items-center space-x-4 text-sm opacity-90 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     {match.country && (
-                      <div className="flex items-center space-x-1">
+                      <div className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-200'}`}>
                         <MapPin className="w-3 h-3" />
                         <span>{match.city ? `${match.city}, ` : ''}{match.country}</span>
                       </div>
                     )}
-                    <div className="flex items-center space-x-1">
+                    <div className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-100' : 'text-white'}`}>
                       <Clock className="w-3 h-3" />
                       <span>Active recently</span>
                     </div>
@@ -249,7 +250,7 @@ export const MatchesPage: React.FC = () => {
                 <div className="p-6">
                   {/* Bio */}
                   {match.bio && (
-                    <p className="text-gray-700 text-sm mb-4 line-clamp-3">
+                    <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'} text-sm mb-4 line-clamp-3`}>
                       {match.bio}
                     </p>
                   )}
@@ -269,18 +270,18 @@ export const MatchesPage: React.FC = () => {
                   {/* Skills */}
                   {match.skills.length > 0 && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Skills</h4>
+                      <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-sm font-medium mb-2`}>Skills</h4>
                       <div className="flex flex-wrap gap-1">
                         {match.skills.slice(0, 4).map((skill, idx) => (
                           <span
                             key={idx}
-                            className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium"
+                            className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-100 text-purple-800'} px-2 py-1 rounded text-xs font-medium`}
                           >
                             {skill}
                           </span>
                         ))}
                         {match.skills.length > 4 && (
-                          <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                          <span className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-100 text-gray-600'} px-2 py-1 rounded text-xs`}>
                             +{match.skills.length - 4} more
                           </span>
                         )}
@@ -291,18 +292,18 @@ export const MatchesPage: React.FC = () => {
                   {/* Interests */}
                   {match.interests.length > 0 && (
                     <div className="mb-6">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Interests</h4>
+                      <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-sm font-medium mb-2`}>Interests</h4>
                       <div className="flex flex-wrap gap-1">
                         {match.interests.slice(0, 3).map((interest, idx) => (
                           <span
                             key={idx}
-                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium"
+                            className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-blue-100 text-blue-800'} px-2 py-1 rounded text-xs font-medium`}
                           >
                             {interest}
                           </span>
                         ))}
                         {match.interests.length > 3 && (
-                          <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                          <span className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-100 text-gray-600'} px-2 py-1 rounded text-xs`}>
                             +{match.interests.length - 3} more
                           </span>
                         )}
@@ -313,10 +314,10 @@ export const MatchesPage: React.FC = () => {
                   {/* Looking For */}
                   {match.lookingFor.length > 0 && (
                     <div className="mb-6">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Looking For</h4>
+                      <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-sm font-medium mb-2`}>Looking For</h4>
                       <div className="space-y-1">
                         {match.lookingFor.slice(0, 2).map((item, idx) => (
-                          <div key={idx} className="text-xs text-gray-600">
+                          <div key={idx} className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             • {item.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </div>
                         ))}
@@ -328,7 +329,7 @@ export const MatchesPage: React.FC = () => {
                   <div className="flex space-x-3">
                     <button
                       onClick={() => skipMatch(match._id)}
-                      className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2"
+                      className={`flex-1 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-100 text-gray-700'} py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2`}
                     >
                       <X className="w-4 h-4" />
                       <span>Skip</span>
@@ -336,7 +337,7 @@ export const MatchesPage: React.FC = () => {
                     <button
                       onClick={() => sendConnectionRequest(match._id)}
                       disabled={sendingRequest === match._id}
-                      className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className={`flex-1 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       {sendingRequest === match._id ? (
                         <LoadingSpinner size="sm" />

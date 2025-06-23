@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../Contexts/ThemeContext';
 import { 
   X, 
   Github,  
@@ -17,6 +18,7 @@ interface CreateProjectModalProps {
 }
 
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose, onSubmit }) => {
+  const { theme } = useTheme();
   const [formData, setFormData] = useState<CreateProjectData>({
     title: '',
     description: '',
@@ -112,15 +114,15 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">Share Your Project</h2>
+          <div className={`flex items-center justify-between p-6 ${theme === 'dark' ? 'border-b border-gray-700' : 'border-b border-gray-200'}`}>
+            <h2 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-2xl font-bold`}>Share Your Project</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className={`${theme === 'dark' ? 'text-gray-400 hover:text-gray-100' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
             >
               <X className="w-6 h-6" />
             </button>
@@ -130,14 +132,14 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Project Title *
               </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
+                className={`w-full px-4 py-3 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
                   errors.title ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter your project title"
@@ -149,14 +151,14 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Description *
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
+                className={`w-full px-4 py-3 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
                   errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Describe your project, what it does, and what you learned..."
@@ -168,7 +170,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
 
             {/* GitHub URL */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 GitHub Repository URL *
               </label>
               <div className="relative">
@@ -177,7 +179,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                   type="url"
                   value={formData.githubUrl}
                   onChange={(e) => handleInputChange('githubUrl', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
+                  className={`w-full pl-10 pr-4 py-3 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
                     errors.githubUrl ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="https://github.com/username/repository"
@@ -190,7 +192,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
 
             {/* Project URL */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Live Demo / Project URL (Optional)
               </label>
               <div className="relative">
@@ -199,7 +201,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                   type="url"
                   value={formData.projectUrl}
                   onChange={(e) => handleInputChange('projectUrl', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
+                  className={`w-full pl-10 pr-4 py-3 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${
                     errors.projectUrl ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="https://your-project-demo.com"
@@ -215,7 +217,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
 
             {/* Technologies */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Technologies Used *
               </label>
               <SkillInput
@@ -230,13 +232,13 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                 Project Status
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => handleInputChange('status', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className={`w-full px-4 py-3 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
               >
                 <option value="in-progress">In Progress</option>
                 <option value="completed">Completed</option>
@@ -259,7 +261,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                   ) : (
                     <EyeOff className="w-4 h-4 text-gray-600" />
                   )}
-                  <span className="text-sm text-gray-700">
+                  <span className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>
                     Make this project public
                   </span>
                 </div>
@@ -270,8 +272,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
             </div>
 
             {/* Team Settings */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Team Settings</h3>
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg p-4`}>
+              <h3 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} text-sm font-medium mb-3`}>Team Settings</h3>
               <div className="space-y-4">
                 <div>
                   <label className="flex items-center space-x-3">
@@ -281,7 +283,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                       onChange={(e) => handleInputChange('allowTeamRequests', e.target.checked)}
                       className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className={`text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'}`}>
                       Allow team requests
                     </span>
                   </label>
@@ -291,13 +293,13 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} mb-2`}>
                     Maximum Team Size
                   </label>
                   <select
                     value={formData.maxTeamSize || 5}
                     onChange={(e) => handleInputChange('maxTeamSize', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className={`w-full px-3 py-2 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                   >
                     <option value={3}>3 members</option>
                     <option value={4}>4 members</option>
@@ -317,18 +319,18 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className={`flex-1 px-6 py-3 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300 text-gray-700'} rounded-lg hover:bg-gray-50 transition-colors`}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  className={`flex-1 px-6 py-3 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2`}
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className={`w-4 h-4 border-2 ${theme === 'dark' ? 'border-gray-100' : 'border-white'} border-t-transparent rounded-full animate-spin`} />
                     <span>Creating...</span>
                   </>
                 ) : (

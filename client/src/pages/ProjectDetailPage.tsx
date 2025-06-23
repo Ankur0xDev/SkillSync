@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTheme } from '../Contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft,
@@ -32,7 +33,8 @@ import { toast } from 'react-hot-toast';
 import type { Project, Comment, UpdateProjectData, TeamRequestData } from '../types';
 
 export const ProjectDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { theme } = useTheme();
+    const { id } = useParams<{ id: string }>();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [project, setProject] = useState<Project | null>(null);
@@ -272,7 +274,7 @@ export const ProjectDetailPage: React.FC = () => {
     (project?.teamMemberCount || 0) < (project?.teamSettings?.maxTeamSize || 5);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-200`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <motion.div
@@ -282,7 +284,7 @@ export const ProjectDetailPage: React.FC = () => {
         >
           <Link
             to="/projects"
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-400 hover:text-gray-100' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Projects</span>
@@ -294,7 +296,7 @@ export const ProjectDetailPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8"
+          className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg overflow-hidden mb-8`}
         >
           <div className="p-8">
             <div className="flex items-start justify-between mb-6">
@@ -314,17 +316,17 @@ export const ProjectDetailPage: React.FC = () => {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{project?.user?.name || 'Unknown User'}</h3>
-                    <p className="text-sm text-gray-500">
+                    <h3 className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{project?.user?.name || 'Unknown User'}</h3>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                       {project?.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'Unknown date'}
                     </p>
                   </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-4`}>
                   {project?.title || 'Untitled Project'}
                   {project?.projectUrl && (
-                    <span className="ml-3 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1 inline-flex">
+                    <span className={`ml-3 ${theme === 'dark' ? 'bg-blue-900 text-blue-100' : 'bg-blue-100 text-blue-800'} px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1 inline-flex`}>
                       <Globe className="w-4 h-4" />
                       <span>Live Preview Available</span>
                     </span>
@@ -337,7 +339,7 @@ export const ProjectDetailPage: React.FC = () => {
                     <span>{(project?.status || 'in-progress').replace('-', ' ')}</span>
                   </span>
                   
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  <div className={`flex items-center space-x-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                     <div className="flex items-center space-x-1">
                       <Eye className="w-4 h-4" />
                       <span>{project?.likes?.length || 0} views</span>
@@ -353,11 +355,11 @@ export const ProjectDetailPage: React.FC = () => {
                   </div>
                 </div>
 
-                <p className="text-gray-700 leading-relaxed mb-6">{project?.description || 'No description available'}</p>
+                <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} leading-relaxed mb-6`}>{project?.description || 'No description available'}</p>
 
                 {/* Technologies */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Technologies Used</h3>
+                  <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-3`}>Technologies Used</h3>
                   <div className="flex flex-wrap gap-2">
                     {project?.technologies?.map((tech, idx) => (
                       <span
@@ -373,12 +375,12 @@ export const ProjectDetailPage: React.FC = () => {
                 {/* Team Section */}
                 {(project?.teamMemberCount || 0) > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Team Members</h3>
+                    <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-3`}>Team Members</h3>
                     <div className='flex  justify-between'>
                     <div className="space-y-3">
                       {project?.teamMembers?.map((member) => (
                         <div key={member._id} className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-blue-600 rounded-full flex items-center justify-center">
+                          <div className={`w-8 h-8 ${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-green-600 to-blue-600'} rounded-full flex items-center justify-center`}>
                             {member?.user?.profilePicture ? (
                               <img 
                                 src={member.user.profilePicture} 
@@ -392,7 +394,7 @@ export const ProjectDetailPage: React.FC = () => {
                             )}
                           </div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-medium text-gray-900">{member?.user?.name || 'Unknown User'}</span>
+                              <span className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{member?.user?.name || 'Unknown User'}</span>
                             {getRoleIcon(member?.role || 'member')}
                           </div>
                         </div>
@@ -431,7 +433,7 @@ export const ProjectDetailPage: React.FC = () => {
                   {(isOwner || isTeamMember) && (
                     <Link
                       to={`/team-dashboard/${project?._id}`}
-                      className="flex items-center space-x-4 bg-indigo-600 text-white px-4 py-1 rounded-lg hover:bg-indigo-700 transition-colors"
+                      className={`flex items-center space-x-4 ${theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-indigo-600 text-white'} px-4 py-1 rounded-lg hover:bg-indigo-700 transition-colors`}
                     >
                       <Users className="w-4 h-4" />
                       <span className='text-sm'>Team Dashboard</span>
@@ -441,7 +443,7 @@ export const ProjectDetailPage: React.FC = () => {
                   {canRequestToJoin && (
                     <button
                       onClick={() => setShowTeamRequest(true)}
-                      className="flex items-center space-x-2 bg-green-600 text-white  py-1 rounded-lg hover:bg-green-700 transition-colors"
+                      className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-green-600 text-white'}  py-1 rounded-lg hover:bg-green-700 transition-colors`}
                     >
                       <UserPlus className="w-4 h-4" />
                       <span>Join Team</span>
@@ -454,7 +456,7 @@ export const ProjectDetailPage: React.FC = () => {
                     href={project?.githubUrl || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center space-x-4 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                    className={`flex items-center space-x-4 ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-900 text-white'} px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors`}
                   >
                     <Github className="w-4 h-4" />
                     <span className='text-sm'>View on GitHub</span>
@@ -465,7 +467,7 @@ export const ProjectDetailPage: React.FC = () => {
                       href={project.projectUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                      className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-green-600 text-white'} px-4 py-2 rounded-lg hover:bg-green-700 transition-colors`}
                     >
                       <ExternalLink className="w-4 h-4" />
                       <span>Live Demo</span>
@@ -475,10 +477,10 @@ export const ProjectDetailPage: React.FC = () => {
                   {isAuthenticated && (
                     <button
                       onClick={handleLike}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                         isLiked 
-                          ? 'bg-red-100 text-red-600 hover:bg-red-200' 
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? `${theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-600'} hover:bg-red-200` 
+                          : `${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-100 text-gray-700'} hover:bg-gray-200`
                       }`}
                     >
                       <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
@@ -490,14 +492,14 @@ export const ProjectDetailPage: React.FC = () => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => setShowEditModal(true)}
-                        className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                        className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors`}
                       >
                         <Edit3 className="w-4 h-4" />
                         <span>Edit</span>
                       </button>
                       <button
                         onClick={handleDeleteProject}
-                        className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                            className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-red-600 text-white' : 'bg-red-600 text-white'} px-4 py-2 rounded-lg hover:bg-red-700 transition-colors`}
                       >
                         <Trash2 className="w-4 h-4" />
                         <span>Delete</span>
@@ -515,9 +517,9 @@ export const ProjectDetailPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-2xl shadow-lg p-8"
+          className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-8`}
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Comments ({project?.commentCount || 0})</h2>
+          <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} mb-6`}>Comments ({project?.commentCount || 0})</h2>
 
           {/* Add Comment */}
           {isAuthenticated && (
@@ -529,13 +531,13 @@ export const ProjectDetailPage: React.FC = () => {
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Add a comment..."
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+                    className={`w-full px-4 py-3 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none`}
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={submittingComment || !comment.trim()}
-                  className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                  className={`px-6 py-3 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2`}
                 >
                   {submittingComment ? (
                     <LoadingSpinner size="sm" />
@@ -550,11 +552,11 @@ export const ProjectDetailPage: React.FC = () => {
           {/* Comments List */}
           <div className="space-y-6">
             {(project?.comments?.length || 0) === 0 ? (
-              <p className="text-gray-500 text-center py-8">No comments yet. Be the first to comment!</p>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-center py-8`}>No comments yet. Be the first to comment!</p>
             ) : (
               project?.comments?.map((comment: Comment) => (
                 <div key={comment._id} className="flex space-x-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className={`w-10 h-10 ${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-full flex items-center justify-center flex-shrink-0`}>
                     {comment?.user?.profilePicture ? (
                       <img 
                         src={comment.user.profilePicture} 
@@ -569,12 +571,12 @@ export const ProjectDetailPage: React.FC = () => {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="font-semibold text-gray-900">{comment?.user?.name || 'Unknown User'}</span>
-                      <span className="text-sm text-gray-500">
+                      <span className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{comment?.user?.name || 'Unknown User'}</span>
+                      <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                         {comment?.createdAt ? new Date(comment.createdAt).toLocaleDateString() : 'Unknown date'}
                       </span>
                     </div>
-                    <p className="text-gray-700">{comment?.content || 'No content'}</p>
+                      <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{comment?.content || 'No content'}</p>
                   </div>
                 </div>
               ))
@@ -599,14 +601,14 @@ export const ProjectDetailPage: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+              className={`fixed inset-0 ${theme === 'dark' ? 'bg-gray-900' : 'bg-black'} bg-opacity-50 flex items-center justify-center p-4 z-50`}
             onClick={() => setShowPreview(false)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-4xl max-h-[90vh] overflow-hidden"
+                className={`w-full max-w-4xl max-h-[90vh] overflow-hidden ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
               {project?.projectUrl ? (

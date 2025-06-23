@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../Contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { 
   Plus, 
@@ -28,7 +29,7 @@ export const ProjectsPage: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
+  const { theme } = useTheme();
   useEffect(() => {
     fetchProjects();
   }, [currentPage, statusFilter, technologyFilter]);
@@ -170,7 +171,7 @@ export const ProjectsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className={`${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} min-h-screen transition-colors duration-200`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -180,15 +181,15 @@ export const ProjectsPage: React.FC = () => {
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Projects</h1>
-              <p className="text-gray-600">
+              <h1 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-3xl font-bold mb-2`}>Projects</h1>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Discover amazing projects and share your own work
               </p>
             </div>
             {isAuthenticated && (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="mt-4 sm:mt-0 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+                className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} mt-4 sm:mt-0 px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2`}
               >
                 <Plus className="w-5 h-5" />
                 <span>Share Project</span>
@@ -202,7 +203,7 @@ export const ProjectsPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-lg p-6 mb-8"
+          className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-6 mb-8`}
         >
           <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 space-y-4 lg:space-y-0">
             {/* Search */}
@@ -213,14 +214,14 @@ export const ProjectsPage: React.FC = () => {
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className={`w-full pl-10 pr-4 py-3 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
               />
             </div>
 
             {/* Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+              className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-400 hover:text-gray-100' : 'text-gray-600 hover:text-gray-900'}`}
             >
               <Filter className="w-5 h-5" />
               <span>Filters</span>
@@ -233,13 +234,13 @@ export const ProjectsPage: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="mt-4 pt-4 border-t border-gray-200"
+              className={`mt-4 pt-4 ${theme === 'dark' ? 'border-t border-gray-700' : 'border-t border-gray-200'}`}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`px-3 py-2 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                 >
                   {statusOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -252,7 +253,7 @@ export const ProjectsPage: React.FC = () => {
                   placeholder="Filter by technology..."
                   value={technologyFilter}
                   onChange={(e) => setTechnologyFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className={`px-3 py-2 ${theme === 'dark' ? 'border border-gray-700 text-gray-100' : 'border border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                 />
               </div>
             </motion.div>
@@ -266,12 +267,12 @@ export const ProjectsPage: React.FC = () => {
           transition={{ delay: 0.2 }}
         >
           {filteredProjects.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-12 text-center`}>
               <Code className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <h2 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-2xl font-bold mb-4`}>
                 {searchTerm ? 'No projects found' : 'No projects yet'}
               </h2>
-              <p className="text-gray-600 mb-8">
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mb-8`}>
                 {searchTerm 
                   ? 'Try adjusting your search terms'
                   : 'Be the first to share your amazing project!'
@@ -280,14 +281,14 @@ export const ProjectsPage: React.FC = () => {
               {isAuthenticated && !searchTerm && (
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+                      className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors`}
                 >
                   Share Your First Project
                 </button>
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
               {filteredProjects.map((project, index) => (
                 <ProjectCard
                   key={project._id}
