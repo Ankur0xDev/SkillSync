@@ -280,5 +280,76 @@ router.get("/verify", auth, (req, res) => {
   res.json({ valid: true, user: getUserData(req.user) });
 });
 
+// Forgot Password: Send Reset Password OTP
+router.post('/send-reset-password-otp', [
+  body('email').isEmail().withMessage('Please enter a valid email'),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    // Always respond with success to avoid leaking which emails exist
+    if (!user) {
+      return res.json({ message: "can't find user with this email" });
+    }
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationOtp = otp;
+    user.verificationOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+    await user.save();
+    // Send email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: email,
+      subject: 'SkillSync Password Reset Code',
+      text: `Your password reset code is ${otp}. It expires in 10 minutes.`,
+    });
+    return res.json({ message: 'If this email exists, a reset code has been sent.' });
+  } catch (error) {
+    console.error('Send reset password OTP error:', error);
+    res.status(500).json({ message: 'Server error while sending reset code' });
+  }
+});
+
+// Forgot Password: Reset Password
+router.post('/reset-password', [
+  body('email').isEmail().withMessage('Please enter a valid email'),
+  body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
+  body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+    const { email, otp, newPassword } = req.body;
+    const user = await User.findOne({ email });
+    if (!user || !user.verificationOtp || user.verificationOtp !== otp) {
+      return res.status(400).json({ message: 'Invalid code or email' });
+    }
+    if (user.verificationOtpExpiresAt < new Date()) {
+      return res.status(400).json({ message: 'Code has expired. Please request a new one.' });
+    }
+    user.password = newPassword
+
+    user.verificationOtp = null;
+    user.verificationOtpExpiresAt = null;
+    await user.save();
+    res.json({ message: 'Password reset successful. You can now log in.' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Server error while resetting password' });
+  }
+});
 
 export default router;

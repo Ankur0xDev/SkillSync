@@ -25,6 +25,14 @@ export const AuthPage: React.FC = () => {
   const [otp, setOtp] = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
   
+  // Add state for forgot password modal/flow
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotStep, setForgotStep] = useState<'email' | 'otp' | 'success'>('email');
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -85,6 +93,46 @@ export const AuthPage: React.FC = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    try {
+      await axios.post('/auth/send-reset-password-otp', { email: forgotEmail });
+      toast.success('If this email exists, a reset code has been sent.');
+      setForgotStep('otp');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to send reset code');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleForgotReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (forgotOtp.length !== 6) {
+      toast.error('Please enter the 6-digit code');
+      return;
+    }
+    if (forgotNewPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      await axios.post('/auth/reset-password', {
+        email: forgotEmail,
+        otp: forgotOtp,
+        newPassword: forgotNewPassword
+      });
+      toast.success('Password reset successful! You can now log in.');
+      setForgotStep('success');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to reset password');
+    } finally {
+      setForgotLoading(false);
+    }
   };
 
   if (loading) {
@@ -228,6 +276,24 @@ export const AuthPage: React.FC = () => {
                     )}
                   </button>
                 </div>
+                {/* Forgot Password link */}
+                {isLogin && !showOtp && (
+                  <div className="text-right mt-2">
+                    <button
+                      type="button"
+                      className="text-sm text-purple-300 hover:text-white focus:outline-none"
+                      onClick={() => {
+                        setShowForgot(true);
+                        setForgotStep('email');
+                        setForgotEmail('');
+                        setForgotOtp('');
+                        setForgotNewPassword('');
+                      }}
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+                )}
               </div>
 
               <button
@@ -276,6 +342,85 @@ export const AuthPage: React.FC = () => {
           <p className="text-sm">🌍 Global developer community</p>
         </div>
       </motion.div>
+
+      {/* Forgot Password Modal/Box */}
+      {showForgot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+              onClick={() => setShowForgot(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            {forgotStep === 'email' && (
+              <form onSubmit={handleForgotSubmit} className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Reset Password</h3>
+                <p className="text-gray-600 text-sm mb-4">Enter your email address to receive a reset code.</p>
+                <input
+                  type="email"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Email address"
+                  value={forgotEmail}
+                  onChange={e => setForgotEmail(e.target.value)}
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                >
+                  {forgotLoading ? <LoadingSpinner size="sm" /> : 'Send Reset Code'}
+                </button>
+              </form>
+            )}
+            {forgotStep === 'otp' && (
+              <form onSubmit={handleForgotReset} className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Enter Code & New Password</h3>
+                <p className="text-gray-600 text-sm mb-4">Check your email for a 6-digit code.</p>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="6-digit code"
+                  value={forgotOtp}
+                  onChange={e => setForgotOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  maxLength={6}
+                  required
+                />
+                <input
+                  type="password"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="New password"
+                  value={forgotNewPassword}
+                  onChange={e => setForgotNewPassword(e.target.value)}
+                  minLength={6}
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                >
+                  {forgotLoading ? <LoadingSpinner size="sm" /> : 'Reset Password'}
+                </button>
+              </form>
+            )}
+            {forgotStep === 'success' && (
+              <div className="text-center space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Password Reset!</h3>
+                <p className="text-gray-600 text-sm mb-4">Your password has been reset. You can now log in with your new password.</p>
+                <button
+                  className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                  onClick={() => setShowForgot(false)}
+                >
+                  Back to Login
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }; 
