@@ -59,10 +59,10 @@ export const DiscussionList: React.FC<DiscussionListProps> = ({
     { value: 'question', label: 'Question', color: 'bg-indigo-100 text-indigo-800' }
   ];
 
-  const getCategoryColor = (category: string) => {
-    const cat = categories.find(c => c.value === category);
-    return cat ? cat.color : 'bg-gray-200 text-gray-800';
-  };
+  // const getCategoryColor = (category: string) => {
+  //   const cat = categories.find(c => c.value === category);
+  //   return cat ? cat.color : 'bg-gray-200 text-gray-800';
+  // };
 
   const getFileIcon = (fileType: string) => {
     if (fileType.startsWith('image/')) return <Image className="w-4 h-4" />;

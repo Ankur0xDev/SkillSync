@@ -7,7 +7,6 @@ import {
   ChevronDown,
   ChevronUp,
   Mail,
-  MessageCircle,
   BookOpen,
   Users,
   Shield,

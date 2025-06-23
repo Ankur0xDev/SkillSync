@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../Contexts/ThemeContext';
 import { motion } from 'framer-motion';
@@ -17,6 +17,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useAuth } from '../Contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import debounce from 'lodash.debounce';
 
 interface User {
   _id: string;
@@ -43,7 +44,7 @@ interface Filters {
   lookingFor: string[];
 }
 
-  export const SearchPage: React.FC = () => {
+export const SearchPage: React.FC = () => {
   const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -70,6 +71,17 @@ interface Filters {
   });
 
   const [newSkill, setNewSkill] = useState('');
+
+  const [searchInput, setSearchInput] = useState(filters.search);
+  const debouncedSetFilter = useRef(
+    debounce((value: string) => {
+      handleFilterChange('search', value);
+    }, 400)
+  ).current;
+
+  useEffect(() => {
+    setSearchInput(filters.search);
+  }, [filters.search]);
 
   const availabilityOptions = [
     { value: '', label: 'Any Availability' },
@@ -254,8 +266,11 @@ interface Filters {
               <input
                 type="text"
                 placeholder="Search by name, bio, skills..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value);
+                  debouncedSetFilter(e.target.value);
+                }}
                 className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
               />
             </div>

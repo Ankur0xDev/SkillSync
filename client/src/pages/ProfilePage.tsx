@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../Contexts/ThemeContext';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import {  useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Edit3,
   Github,
   Linkedin,
   Globe,
   Eye,
   Users,
-
-  AlertTriangle
 } from 'lucide-react';
 import { useAuth } from '../Contexts/AuthContext';
-// import { LoadingSpinner } from '../components/LoadingSpinner';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { SocialStats } from '../components/SocialStats';
@@ -24,13 +20,11 @@ import { ConnectionsOnlyProfile } from '../components/ConnectionsOnlyProfile';
 
 export const ProfilePage: React.FC = () => {
   const { theme } = useTheme();
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
   const navigate = useNavigate();
   const { userId } = useParams();
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPrivateProfile, setIsPrivateProfile] = useState(false);
   const [isConnectionsOnlyProfile, setIsConnectionsOnlyProfile] = useState(false);
@@ -84,26 +78,6 @@ export const ProfilePage: React.FC = () => {
   }, [userId, user, navigate]);
 
   console.log('Current state:', { loading, error, profile });
-
-  const handleDeleteAccount = async () => {
-    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      return;
-    }
-
-    setDeleteLoading(true);
-    try {
-      await axios.delete('/users/account');
-      toast.success('Account deleted successfully');
-      logout();
-      navigate('/');
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      toast.error('Failed to delete account');
-    } finally {
-      setDeleteLoading(false);
-      setShowDeleteConfirm(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -214,13 +188,7 @@ export const ProfilePage: React.FC = () => {
                       </p>
                     )}
                   </div>
-                  {/* <Link
-                    to="/profile/edit"
-                    className={`mt-4 sm:mt-0 ${theme === 'dark' ? 'bg-green-600 text-white' : 'bg-purple-600 text-white'} px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2`}
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    <span>Edit Profile</span>
-                  </Link> */}
+
                 </div>
               </div>
             </div>
@@ -417,4 +385,4 @@ export const ProfilePage: React.FC = () => {
       </div>
     </div>
   );
-};
+}

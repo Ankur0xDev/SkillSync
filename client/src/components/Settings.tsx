@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '../Contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { AppearanceTab } from './AppearanceTab';
 import { 
   Settings as SettingsIcon, 
-  Lock, 
-  Mail, 
   User, 
   Eye, 
   EyeOff, 
@@ -44,7 +42,7 @@ interface ChangeEmailData {
   otp: string;
 }
 
-export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
+export const Settings: React.FC<SettingsProps> = () => {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('account');
@@ -55,7 +53,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
-  const [showDeletionOtp, setShowDeletionOtp] = useState(false);
+  // const [showDeletionOtp, setShowDeletionOtp] = useState(false);
   const [deletionOtp, setDeletionOtp] = useState('');
   const [deletionStep, setDeletionStep] = useState<'initial' | 'otp-sent' | 'confirming'>('initial');
   
@@ -79,7 +77,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     confirmPassword: ''
   });
 
-  const [verificationData, setVerificationData] = useState<EmailVerificationData>({
+  const [verificationData] = useState<EmailVerificationData>({
     email: user?.email || '',
     otp: ''
   });
@@ -307,7 +305,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const handleCancelDeletion = () => {
     setDeletionStep('initial');
     setDeletionOtp('');
-    setShowDeletionOtp(false);
+    // setShowDeletionOtp(false);
   };
 
   const handlePrivacySettingsUpdate = async () => {
