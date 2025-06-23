@@ -196,6 +196,14 @@ const userSchema = new mongoose.Schema({
     emailNotifications: {
       type: Boolean,
       default: true
+    },
+    connectionRequests: {
+      type: Boolean,
+      default: true
+    },
+    projectUpdates: {
+      type: Boolean,
+      default: true
     }
   }
 }, {

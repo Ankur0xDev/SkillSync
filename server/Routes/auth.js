@@ -171,6 +171,17 @@ router.post("/verify-otp", async (req, res) => {
     await user.save();
     await PendingUser.deleteOne({ email });
 
+    // Send welcome email
+    try {
+      await sendEmailNotification({
+        to: user.email,
+        subject: 'Welcome to SkillSync!',
+        text: `Hi ${user.name},\n\nWelcome to SkillSync! Your account has been successfully created. We're excited to have you on board.\n\nStart exploring, connect with others, and make the most of your journey!\n\nBest regards,\nThe SkillSync Team`
+      });
+    } catch (err) {
+      console.error('Failed to send welcome email:', err);
+    }
+
     const token = generateToken(user._id);
 
     res.status(201).json({
