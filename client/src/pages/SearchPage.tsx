@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../Contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { 
   Search, 
@@ -43,6 +44,7 @@ interface Filters {
 }
 
 export const SearchPage: React.FC = () => {
+  const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -219,17 +221,17 @@ export const SearchPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} min-h-screen`}>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} border-b border-gray-200`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-8"
           >
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Find Developers</h1>
-            <p className="text-xl text-gray-600">
+            <h1 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-4xl font-bold mb-4`}>Find Developers</h1>
+            <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-xl`}>
               Discover talented developers from around the world
             </p>
           </motion.div>
@@ -247,12 +249,12 @@ export const SearchPage: React.FC = () => {
                 placeholder="Search by name, bio, skills..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+              className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2`}
             >
               <Filter className="w-4 h-4" />
               <span>Filters</span>
@@ -266,12 +268,12 @@ export const SearchPage: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-gray-50 rounded-lg p-6 mb-6"
+              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg p-6 mb-6`}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Country */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} block text-sm font-medium mb-2`}>
                     Country
                   </label>
                   <input
@@ -279,19 +281,19 @@ export const SearchPage: React.FC = () => {
                     placeholder="e.g., United States"
                     value={filters.country}
                     onChange={(e) => handleFilterChange('country', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                   />
                 </div>
 
                 {/* Experience */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} block text-sm font-medium mb-2`}>
                     Experience Level
                   </label>
                   <select
                     value={filters.experience}
                     onChange={(e) => handleFilterChange('experience', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                   >
                     {experienceOptions.map(option => (
                       <option key={option.value} value={option.value}>
@@ -303,13 +305,13 @@ export const SearchPage: React.FC = () => {
 
                 {/* Availability */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} block text-sm font-medium mb-2`}>
                     Availability
                   </label>
                   <select
                     value={filters.availability}
                     onChange={(e) => handleFilterChange('availability', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                   >
                     {availabilityOptions.map(option => (
                       <option key={option.value} value={option.value}>
@@ -322,19 +324,19 @@ export const SearchPage: React.FC = () => {
 
               {/* Skills Filter */}
               <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} block text-sm font-medium mb-2`}>
                   Skills
                 </label>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {filters.skills.map((skill, index) => (
                     <span
                       key={index}
-                      className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-2"
+                      className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-100 text-purple-800'} px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-2`}
                     >
                       <span>{skill}</span>
                       <button
                         onClick={() => removeSkillFilter(skill)}
-                        className="text-purple-600 hover:text-purple-800"
+                        className={`${theme === 'dark' ? 'text-gray-100' : 'text-purple-600'} hover:text-purple-800`}
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -348,11 +350,11 @@ export const SearchPage: React.FC = () => {
                     value={newSkill}
                     onChange={(e) => setNewSkill(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkillFilter())}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                   />
                   <button
                     onClick={addSkillFilter}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+                    className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} px-4 py-2 rounded-lg hover:bg-purple-700`}
                   >
                     Add
                   </button>
@@ -361,7 +363,7 @@ export const SearchPage: React.FC = () => {
 
               {/* Looking For */}
               <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} block text-sm font-medium mb-3`}>
                   Looking For
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -371,9 +373,9 @@ export const SearchPage: React.FC = () => {
                         type="checkbox"
                         checked={filters.lookingFor.includes(option.value)}
                         onChange={(e) => handleLookingForChange(option.value, e.target.checked)}
-                        className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} w-4 h-4 border-gray-300 rounded focus:ring-purple-500`}
                       />
-                      <span className="text-sm text-gray-700">{option.label}</span>
+                      <span className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} text-sm`}>{option.label}</span>
                     </label>
                   ))}
                 </div>
@@ -383,7 +385,7 @@ export const SearchPage: React.FC = () => {
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={clearFilters}
-                  className="text-purple-600 hover:text-purple-700 font-medium"
+                  className={`${theme === 'dark' ? 'text-gray-100' : 'text-purple-600'} hover:text-purple-700 font-medium`}
                 >
                   Clear All Filters
                 </button>
@@ -392,7 +394,7 @@ export const SearchPage: React.FC = () => {
           )}
 
           {/* Results Count */}
-          <div className="text-sm text-gray-600">
+          <div className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm`}>
             {pagination.totalUsers} developer{pagination.totalUsers !== 1 ? 's' : ''} found
           </div>
         </div>
@@ -411,13 +413,13 @@ export const SearchPage: React.FC = () => {
             className="text-center py-16"
           >
             <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">No developers found</h2>
-            <p className="text-gray-600 mb-8">
+            <h2 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-2xl font-bold mb-4`}>No developers found</h2>
+            <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mb-8`}>
               Try adjusting your search criteria or filters to find more developers.
             </p>
             <button
               onClick={clearFilters}
-              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+              className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors`}
             >
               Clear Filters
             </button>
@@ -431,11 +433,11 @@ export const SearchPage: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                  className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300`}
                 >
                   {/* Header */}
                   <div 
-                    className={`relative h-32 ${!user.backgroundPicture ? 'bg-gradient-to-r from-purple-600 to-blue-600' : ''}`}
+                    className={`relative h-32 ${!user.backgroundPicture ? `${theme === 'dark' ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'}` : ''}`}
                   >
                     {user.backgroundPicture ? (
                       <>
@@ -448,7 +450,7 @@ export const SearchPage: React.FC = () => {
                       </>
                     ) : null}
                     <div className="absolute -bottom-8 left-6">
-                      <div className={`w-16 h-16 ${user.profilePicture ? '' : 'bg-gradient-to-r from-purple-600 to-blue-600'} rounded-2xl overflow-hidden border-4 border-white shadow-lg flex items-center justify-center`}>
+                      <div className={`w-16 h-16 ${user.profilePicture ? '' : `${theme === 'dark' ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'}`} rounded-2xl overflow-hidden border-4 border-white shadow-lg flex items-center justify-center`}>
                         {user.profilePicture ? (
                           <img 
                             src={user.profilePicture} 
@@ -457,14 +459,14 @@ export const SearchPage: React.FC = () => {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-2xl font-bold text-white">
+                            <span className={`${theme === 'dark' ? 'text-gray-100' : 'text-white'} text-2xl font-bold`}>
                               {user.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="absolute top-4 right-4 flex items-center space-x-2 text-sm text-white">
+                    <div className={`absolute top-4 right-4 flex items-center space-x-2 text-sm ${theme === 'dark' ? 'text-gray-100' : 'text-white'}`}>
                       <Clock className="w-3 h-3" />
                       <span>Active recently</span>
                     </div>
@@ -472,9 +474,9 @@ export const SearchPage: React.FC = () => {
 
                   {/* Content */}
                   <div className="p-6 pt-10">
-                    <h3 className="text-xl font-bold mb-2">{user.name}</h3>
+                    <h3 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-xl font-bold mb-2`}>{user.name}</h3>
                     {(user.country || user.city) && (
-                      <div className="flex items-center space-x-1 text-sm text-gray-500 mb-4">
+                      <div className={`flex items-center space-x-1 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mb-4`}>
                         <MapPin className="w-3 h-3" />
                         <span>{user.city ? `${user.city}, ` : ''}{user.country}</span>
                       </div>
@@ -482,7 +484,7 @@ export const SearchPage: React.FC = () => {
 
                     {/* Bio */}
                     {user.bio && (
-                      <p className="text-gray-700 text-sm mb-4 line-clamp-3">
+                      <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'} text-sm mb-4 line-clamp-3`}>
                         {user.bio}
                       </p>
                     )}
@@ -499,18 +501,18 @@ export const SearchPage: React.FC = () => {
                     {/* Skills */}
                     {user.skills.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-900 mb-2">Skills</h4>
+                        <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-sm font-medium mb-2`}>Skills</h4>
                         <div className="flex flex-wrap gap-1">
                           {user.skills.slice(0, 4).map((skill, idx) => (
                             <span
                               key={idx}
-                              className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium"
+                              className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-100 text-purple-800'} px-2 py-1 rounded text-xs font-medium`}
                             >
                               {skill}
                             </span>
                           ))}
                           {user.skills.length > 4 && (
-                            <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                            <span className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-100 text-gray-600'} px-2 py-1 rounded text-xs`}>
                               +{user.skills.length - 4} more
                             </span>
                           )}
@@ -522,7 +524,7 @@ export const SearchPage: React.FC = () => {
                     <div className="flex space-x-3">
                       <Link
                         to={`/profile/${user._id}`}
-                        className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2"
+                        className={`flex-1 ${theme === 'dark' ? 'bg-gray-700 text-gray-100 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} py-3 rounded-lg transition-colors flex items-center justify-center space-x-2`}
                       >
                         <Users className="w-4 h-4" />
                         <span>View Profile</span>
@@ -531,7 +533,7 @@ export const SearchPage: React.FC = () => {
                         <button
                           onClick={() => sendConnectionRequest(user._id)}
                           disabled={sendingRequest === user._id || sentRequests.includes(user._id)}
-                          className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className={`flex-1 ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-purple-600 text-white'} py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
                           {sendingRequest === user._id ? (
                             <LoadingSpinner size="sm" />
@@ -560,17 +562,17 @@ export const SearchPage: React.FC = () => {
                 <button
                   onClick={() => fetchUsers(pagination.currentPage - 1)}
                   disabled={!pagination.hasPrev}
-                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className={`px-4 py-2 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'} rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50`}
                 >
                   Previous
                 </button>
-                <span className="text-gray-600">
+                <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   Page {pagination.currentPage} of {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => fetchUsers(pagination.currentPage + 1)}
                   disabled={!pagination.hasNext}
-                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className={`px-4 py-2 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'} rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50`}
                 >
                   Next
                 </button>
