@@ -300,14 +300,17 @@ export const DashboardPage: React.FC = () => {
                           {connection.user.name}
                         </h3>
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {connection.user.skills.slice(0, 3).map((skill, idx) => (
-                            <span
-                              key={idx}
-                              className={`${theme === 'dark' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'} px-2 py-1 rounded text-xs font-medium`}
-                            >
-                              {skill}
-                            </span>
-                          ))}
+                          {connection.user.skills.slice(0, 3).map((skillRaw, idx) => {
+                            const skill = typeof skillRaw === 'string' ? { name: skillRaw, experience: 'beginner' } : skillRaw;
+                            return (
+                              <span
+                                key={skill.name + '-' + skill.experience + '-' + idx}
+                                className={`${theme === 'dark' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'} px-2 py-1 rounded text-xs font-medium`}
+                              >
+                                {skill.name} <span className="text-xs text-gray-500">({skill.experience})</span>
+                              </span>
+                            );
+                          })}
                         </div>
                       </div>
                       <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
