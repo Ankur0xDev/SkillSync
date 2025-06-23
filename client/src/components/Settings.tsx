@@ -37,6 +37,11 @@ interface EmailVerificationData {
   otp: string;
 }
 
+interface ChangeEmailData {
+  newEmail: string;
+  otp: string;
+}
+
 export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
@@ -51,11 +56,21 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const [showDeletionOtp, setShowDeletionOtp] = useState(false);
   const [deletionOtp, setDeletionOtp] = useState('');
   const [deletionStep, setDeletionStep] = useState<'initial' | 'otp-sent' | 'confirming'>('initial');
+  
+  // New state variables for change email functionality
+  const [showChangeEmail, setShowChangeEmail] = useState(false);
+  const [changeEmailData, setChangeEmailData] = useState<ChangeEmailData>({
+    newEmail: '',
+    otp: ''
+  });
+  const [changeEmailStep, setChangeEmailStep] = useState<'initial' | 'otp-sent' | 'confirming'>('initial');
+  const [emailMode, setEmailMode] = useState<'verify' | 'change'>('verify');
+  
   const [privacySettings, setPrivacySettings] = useState({
     profileVisibility: user?.privacySettings?.profileVisibility || 'public',
     showOnlineStatus: user?.privacySettings?.showOnlineStatus ?? true
   });
-
+  
   const [passwordData, setPasswordData] = useState<ChangePasswordData>({
     currentPassword: '',
     newPassword: '',
@@ -110,6 +125,36 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   };
 
   const handleSendVerificationEmail = async () => {
+    if (emailMode === 'change') {
+      // Handle change email flow
+      if (!changeEmailData.newEmail) {
+        toast.error('Please enter a new email address');
+        return;
+      }
+      
+      if (changeEmailData.newEmail === user?.email) {
+        toast.error('New email must be different from current email');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        await axios.post('/users/send-change-email-otp', {
+          newEmail: changeEmailData.newEmail
+        });
+        
+        setChangeEmailStep('otp-sent');
+        setShowChangeEmail(true);
+        toast.success('Verification email sent to your new email address');
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || 'Failed to send verification email');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Handle email verification flow
     if (!verificationData.email) {
       toast.error('Please enter your email address');
       return;
@@ -131,13 +176,17 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     }
   };
 
-  const handleChangeEmail=async()=>{
-    if(!user?.isVerified){
+  const handleChangeEmail = async () => {
+    if (!user?.isVerified) {
       toast.error('Please verify your email first');
       return;
     }
-    // setShowChangeEmail(true);
-  }
+    
+    setEmailMode('change');
+    setShowChangeEmail(true);
+    setChangeEmailStep('initial');
+    setChangeEmailData({ newEmail: '', otp: '' });
+  };
 
   const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +212,43 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleConfirmChangeEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (changeEmailData.otp.length !== 6) {
+      toast.error('Please enter the 6-digit verification code');
+      return;
+    }
+
+    setLoading(true);
+    setChangeEmailStep('confirming');
+    try {
+      const response = await axios.put('/users/change-email', {
+        newEmail: changeEmailData.newEmail,
+        otp: changeEmailData.otp
+      });
+      
+      updateUser(response.data.user);
+      setShowChangeEmail(false);
+      setChangeEmailData({ newEmail: '', otp: '' });
+      setChangeEmailStep('initial');
+      setEmailMode('verify');
+      toast.success('Email changed successfully');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to change email');
+      setChangeEmailStep('otp-sent');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelChangeEmail = () => {
+    setShowChangeEmail(false);
+    setChangeEmailData({ newEmail: '', otp: '' });
+    setChangeEmailStep('initial');
+    setEmailMode('verify');
   };
 
   const handleDeleteAccount = async () => {
@@ -285,27 +371,30 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 }
               </p>
             </div>
-            {!user?.isVerified ?  (
+            {!user?.isVerified ? (
               <button
-                onClick={handleSendVerificationEmail}
+                onClick={() => {
+                  setEmailMode('verify');
+                  handleSendVerificationEmail();
+                }}
                 disabled={loading}
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm"
               >
                 {loading ? <LoadingSpinner size="sm" /> : 'Verify Email'}
               </button>
-            ):(
+            ) : (
               <button
-                onClick={handleSendVerificationEmail}
+                onClick={handleChangeEmail}
                 disabled={loading}
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm"
               >
                 {loading ? <LoadingSpinner size="sm" /> : 'Change Email'}
               </button>
-
             )}
           </div>
           
-          {showOtp && (
+          {/* Email Verification OTP Form */}
+          {showOtp && emailMode === 'verify' && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -343,6 +432,96 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          )}
+
+          {/* Change Email Form */}
+          {showChangeEmail && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="border rounded-lg p-4 bg-gray-50"
+            >
+              {changeEmailStep === 'initial' && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      New Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={changeEmailData.newEmail}
+                      onChange={(e) => setChangeEmailData(prev => ({ ...prev, newEmail: e.target.value }))}
+                      placeholder="Enter new email address"
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => {
+                        setEmailMode('change');
+                        handleSendVerificationEmail();
+                      }}
+                      disabled={loading || !changeEmailData.newEmail}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm"
+                    >
+                      {loading ? <LoadingSpinner size="sm" /> : 'Send Verification'}
+                    </button>
+                    <button
+                      onClick={handleCancelChangeEmail}
+                      disabled={loading}
+                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {changeEmailStep === 'otp-sent' && (
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600">
+                    Enter the 6-digit code sent to {changeEmailData.newEmail}
+                  </p>
+                  <form onSubmit={handleConfirmChangeEmail} className="space-y-3">
+                    <input
+                      type="text"
+                      value={changeEmailData.otp}
+                      onChange={(e) => setChangeEmailData(prev => ({ 
+                        ...prev, 
+                        otp: e.target.value.replace(/\D/g, '').slice(0, 6) 
+                      }))}
+                      placeholder="Enter 6-digit code"
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      maxLength={6}
+                    />
+                    <div className="flex space-x-2">
+                      <button
+                        type="submit"
+                        disabled={loading || changeEmailData.otp.length !== 6}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm"
+                      >
+                        {loading ? <LoadingSpinner size="sm" /> : 'Confirm Change'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCancelChangeEmail}
+                        disabled={loading}
+                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {changeEmailStep === 'confirming' && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <LoadingSpinner size="sm" />
+                  <span>Changing your email...</span>
+                </div>
+              )}
             </motion.div>
           )}
         </div>

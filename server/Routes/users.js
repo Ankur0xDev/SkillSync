@@ -310,8 +310,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
     console.error('Get user profile error:', error);
     res.status(500).json({ message: 'Server error' });
   }
-});
-
+}); 
 // Update user profile
 router.put('/profile', auth, [
   body('name').optional().trim().isLength({ min: 2, max: 100 }),
@@ -772,6 +771,135 @@ router.post('/verify-email', auth, [
   } catch (error) {
     console.error('Verify email error:', error);
     res.status(500).json({ message: 'Server error while verifying email' });
+  }
+});
+
+// Send change email OTP
+router.post('/send-change-email-otp', auth, [
+  body('newEmail').isEmail().withMessage('Please enter a valid email')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+    
+    const { newEmail } = req.body;
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Check if user's current email is verified
+    if (!user.isVerified) {
+      return res.status(400).json({ message: 'Please verify your current email first' });
+    }
+    
+    // Check if new email is different from current email
+    if (newEmail === user.email) {
+      return res.status(400).json({ message: 'New email must be different from current email' });
+    }
+    
+    // Check if new email is already in use by another user
+    const existingUser = await User.findOne({ email: newEmail });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email is already in use by another account' });
+    }
+
+    // Check if there's already a pending verification for this email
+    const existingPendingUser = await PendingUser.findOne({ email: newEmail });
+    let otp;
+    
+    if (existingPendingUser) {
+      // Update existing pending user
+      otp = Math.floor(100000 + Math.random() * 900000).toString();
+      existingPendingUser.otp = otp;
+      existingPendingUser.otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      await existingPendingUser.save();
+    } else {
+      // Create new pending user
+      otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const newPendingUser = new PendingUser({
+        email: newEmail,
+        otp: otp,
+        otpExpiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+      });
+      await newPendingUser.save();
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: newEmail,
+      subject: "Your skillSync Email Change Verification",
+      text: `Your OTP for changing email is ${otp}. It expires in 10 minutes`,
+    });
+
+    res.json({ 
+      message: 'Verification email sent successfully',
+    });
+  } catch (error) {
+    console.error('Send change email OTP error:', error);
+    res.status(500).json({ message: 'Server error while sending verification email' });
+  }
+});
+
+// Change email
+router.put('/change-email', auth, [
+  body('newEmail').isEmail().withMessage('Please enter a valid email'),
+  body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+
+    const { newEmail, otp } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if user's current email is verified
+    if (!user.isVerified) {
+      return res.status(400).json({ message: 'Please verify your current email first' });
+    }
+
+    // Find pending user with the provided email and OTP
+    const pendingUser = await PendingUser.findOne({ email: newEmail, otp });
+
+    if (!pendingUser) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    if (pendingUser.otpExpiresAt < new Date()) {
+      return res.status(400).json({ message: 'OTP has expired' });
+    }
+
+    // Update user's email
+    user.email = newEmail;
+    await user.save();
+
+    // Delete the pending user record
+    await PendingUser.findByIdAndDelete(pendingUser._id);
+
+    res.json({ 
+      message: 'Email changed successfully',
+      user: user.getPublicProfile ? user.getPublicProfile() : user
+    });
+  } catch (error) {
+    console.error('Change email error:', error);
+    res.status(500).json({ message: 'Server error while changing email' });
   }
 });
 
