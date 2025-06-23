@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './Contexts/AuthContext';
-import { ThemeProvider } from './Contexts/ThemeContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -30,10 +29,9 @@ import DirectChat from './components/DirectChat';
 
 function App() {
   return (
-    <ThemeProvider>
       <AuthProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="min-h-screen transition-colors duration-200">
             <Navbar />
             <main className="flex-1">
               <Routes>
@@ -118,7 +116,6 @@ function App() {
           </div>
         </Router>
       </AuthProvider>
-    </ThemeProvider>
   );
 }
 

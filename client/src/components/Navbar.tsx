@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Code2, 
-  Search, 
-  Users, 
-  Heart, 
-  LayoutDashboard, 
-  User, 
-  LogOut, 
-  Menu, 
+import { useTheme } from '../Contexts/ThemeContext';
+import {
+  Code2,
+  Search,
+  Users,
+  Heart,
+  LayoutDashboard,
+  User,
+  LogOut,
+  Menu,
   X,
   // Bell,
   FolderOpen,
@@ -18,6 +19,7 @@ import {
 import { useAuth } from '../Contexts/AuthContext';
 
 export const Navbar: React.FC = () => {
+  const { theme } = useTheme();
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,7 +44,7 @@ export const Navbar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+    <nav className={` ${theme === 'dark' ? 'bg-gray-900 border-gray-700' : 'bg-white/80 backdrop-blur-md border-b border-gray-200 '}  border-b border-gray-200  sticky top-0 z-50`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -70,11 +72,10 @@ export const Navbar: React.FC = () => {
                   <Link
                     key={link.to}
                     to={link.to}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 relative ${
-                      isActive(link.to)
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 relative ${isActive(link.to)
                         ? 'text-purple-600 bg-purple-50'
-                        : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
-                    }`}
+                        : `${theme === 'dark' ? 'bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-purple-600' : 'bg-white text-gray-700 bg-blue-400 hover:bg-gray-100  '}`
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span>{link.label}</span>
@@ -118,20 +119,20 @@ export const Navbar: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <span className="text-gray-700 cursor-pointer">{user?.name}</span>
+                    <span className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-700'} cursor-pointer`}>{user?.name}</span>
                   </button>
-               
+
                   <AnimatePresence>
-     {isProfileMenuOpen && (
+                    {isProfileMenuOpen && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: -10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                        className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50"
+                        className={`absolute right-0 mt-2 w-48 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white text-gray-700'} rounded-xl shadow-lg border border-gray-200 py-2 z-50`}
                       >
                         <Link
                           to="/profile"
-                          className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          className={`flex items-center rounded-lg space-x-3 px-4 py-2 text-sm ${theme === 'dark' ? 'text-gray-100 hover:bg-gray-500' : 'text-gray-700'} `}
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
                           <User className="w-4 h-4" />
@@ -139,7 +140,7 @@ export const Navbar: React.FC = () => {
                         </Link>
                         <Link
                           to="/dashboard"
-                          className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          className={`flex items-center rounded-lg space-x-3 px-4 py-2 text-sm ${theme === 'dark' ? 'text-gray-100 hover:bg-gray-500' : 'text-gray-700'} `}
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
                           <LayoutDashboard className="w-4 h-4" />
@@ -147,7 +148,7 @@ export const Navbar: React.FC = () => {
                         </Link>
                         <Link
                           to="/settings"
-                          className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          className={`flex items-center rounded-lg space-x-3 px-4 py-2 text-sm ${theme === 'dark' ? 'text-gray-100 hover:bg-gray-500' : 'text-gray-700'} `}
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
                           <Settings className="w-4 h-4" />
@@ -156,7 +157,7 @@ export const Navbar: React.FC = () => {
                         <hr className="my-2" />
                         <button
                           onClick={handleLogout}
-                          className="flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
+                          className={`flex items-center rounded-lg space-x-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 ${theme === 'dark' ? 'hover:bg-red-50' : ''} w-full text-left`}
                         >
                           <LogOut className="w-4 h-4" />
                           <span>Sign Out</span>
@@ -170,7 +171,7 @@ export const Navbar: React.FC = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/search"
-                  className="text-gray-600 hover:text-purple-600 font-medium"
+                  className="text-gray-600 dark:text-gray-400 hover:text-purple-600 font-medium"
                 >
                   Browse Developers
                 </Link>
@@ -186,7 +187,7 @@ export const Navbar: React.FC = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+              className="md:hidden p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -211,11 +212,10 @@ export const Navbar: React.FC = () => {
                         key={link.to}
                         to={link.to}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                          isActive(link.to)
+                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${isActive(link.to)
                             ? 'text-purple-600 bg-purple-50'
-                            : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
-                        }`}
+                            : 'text-gray-600 dark:text-gray-400 hover:text-purple-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                          }`}
                       >
                         <Icon className="w-5 h-5" />
                         <span>{link.label}</span>
@@ -225,7 +225,7 @@ export const Navbar: React.FC = () => {
                   <Link
                     to="/settings"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-purple-600 hover:bg-gray-50"
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium text-gray-600 dark:text-gray-400 hover:text-purple-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
                     <Settings className="w-5 h-5" />
                     <span>Settings</span>
@@ -233,7 +233,7 @@ export const Navbar: React.FC = () => {
                   <hr className="my-4" />
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 w-full text-left rounded-lg"
+                    className="flex items-center space-x-3 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 w-full text-left rounded-lg"
                   >
                     <LogOut className="w-5 h-5" />
                     <span>Sign Out</span>
@@ -244,7 +244,7 @@ export const Navbar: React.FC = () => {
                   <Link
                     to="/search"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-2 text-gray-600 hover:text-purple-600"
+                    className="block px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-purple-600"
                   >
                     Browse Developers
                   </Link>

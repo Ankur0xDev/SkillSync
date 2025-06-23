@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../Contexts/ThemeContext';
 import { motion } from 'framer-motion';
+import { AppearanceTab } from './AppearanceTab';
 import { 
   Settings as SettingsIcon, 
   Lock, 
@@ -81,6 +83,15 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     email: user?.email || '',
     otp: ''
   });
+
+  const [notificationSettings, setNotificationSettings] = useState({
+    emailNotifications: user?.notificationSettings?.emailNotifications ?? true,
+    connectionRequests: user?.notificationSettings?.connectionRequests ?? true,
+    projectUpdates: user?.notificationSettings?.projectUpdates ?? true
+  });
+
+  const { theme } = useTheme();
+
 
   const tabs = [
     { id: 'account', label: 'Account', icon: User },
@@ -312,6 +323,24 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     }
   };
 
+  const handleNotificationToggle = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    const newSettings = { ...notificationSettings, [name]: checked };
+    setNotificationSettings(newSettings);
+    setLoading(true);
+    try {
+      await axios.put('/users/notification-settings', newSettings);
+      toast.success('Notification settings updated');
+      if (user) {
+        updateUser({ ...user, notificationSettings: { ...user.notificationSettings, ...newSettings } });
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to update notification settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderAccountTab = () => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -319,8 +348,8 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       className="space-y-6"
     >
       {/* Profile Information */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-sm border dark:border-gray-700`}>
+        <h3 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-lg font-semibold mb-4`}>Profile Information</h3>
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100">
@@ -333,15 +362,15 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
               )}
             </div>
             <div>
-              <h4 className="font-medium text-gray-900">{user?.name}</h4>
-              <p className="text-sm text-gray-500">{user?.email}</p>
+              <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{user?.name}</h4>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-sm`}>{user?.email}</p>
               <div className="flex items-center space-x-2 mt-1">
                 {user?.isVerified ? (
                   <CheckCircle className="w-4 h-4 text-green-500" />
                 ) : (
                   <AlertCircle className="w-4 h-4 text-yellow-500" />
                 )}
-                <span className="text-xs text-gray-500">
+                <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-xs`}>
                   {user?.isVerified ? 'Verified' : 'Not verified'}
                 </span>
               </div>
@@ -358,13 +387,13 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       </div>
 
       {/* Email Verification */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Email Verification</h3>
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-sm border dark:border-gray-700`}>
+        <h3 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-lg font-semibold mb-4`}>Email Verification</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Current email: {user?.email}</p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm`}>Current email: {user?.email}</p>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-xs mt-1`}>
                 {user?.isVerified 
                   ? 'Your email is verified and secure' 
                   : 'Verify your email to secure your account'
@@ -536,11 +565,11 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       className="space-y-6"
     >
       {/* Change Password */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h3>
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-sm border dark:border-gray-700`}>
+        <h3 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-lg font-semibold mb-4`}>Change Password</h3>
         <form onSubmit={handlePasswordChange} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} block text-sm font-medium  mb-2`}>
               Current Password
             </label>
             <div className="relative">
@@ -548,7 +577,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 type={showCurrentPassword ? 'text' : 'password'}
                 value={passwordData.currentPassword}
                 onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 pr-10"
+                className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 pr-10`}
                 placeholder="Enter current password"
                 required
               />
@@ -567,7 +596,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} block text-sm font-medium  mb-2`}>
               New Password
             </label>
             <div className="relative">
@@ -575,7 +604,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 type={showNewPassword ? 'text' : 'password'}
                 value={passwordData.newPassword}
                 onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 pr-10"
+                className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 pr-10`}
                 placeholder="Enter new password"
                 required
               />
@@ -594,7 +623,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} block text-sm font-medium  mb-2`}>
               Confirm New Password
             </label>
             <div className="relative">
@@ -602,7 +631,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={passwordData.confirmPassword}
                 onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 pr-10"
+                className={`${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'} w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 pr-10`}
                 placeholder="Confirm new password"
                 required
               />
@@ -631,9 +660,9 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       </div>
 
       {/* Security Tips */}
-      <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-        <h3 className="text-lg font-semibold text-blue-900 mb-3">Security Tips</h3>
-        <ul className="space-y-2 text-sm text-blue-800">
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'} rounded-xl p-6 border border-blue-200`}>
+        <h3 className={`${theme === 'dark' ? 'text-white' : 'text-blue-900'} text-lg font-semibold mb-3`}>Security Tips</h3>
+        <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-blue-800'}`}>
           <li>• Use a strong password with at least 8 characters</li>
           <li>• Include a mix of letters, numbers, and symbols</li>
           <li>• Never share your password with anyone</li>
@@ -649,62 +678,57 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      <div className="bg-white rounded-xl p-6 shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Notification Preferences</h3>
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-sm border dark:border-gray-700`}>
+        <h3 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-lg font-semibold mb-4`}>Notification Preferences</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-gray-900">Email Notifications</h4>
-              <p className="text-sm text-gray-500">Receive notifications via email</p>
+              <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} font-medium`}>Email Notifications</h4>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-sm`}>Receive notifications via email</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                name="emailNotifications"
+                checked={notificationSettings.emailNotifications}
+                onChange={handleNotificationToggle}
+                disabled={loading}
+              />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
           </div>
-
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-gray-900">Connection Requests</h4>
-              <p className="text-sm text-gray-500">Get notified when someone wants to connect</p>
+              <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} font-medium`}>Connection Requests</h4>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-sm`}>Get notified when someone wants to connect</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                name="connectionRequests"
+                checked={notificationSettings.connectionRequests}
+                onChange={handleNotificationToggle}
+                disabled={loading}
+              />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
           </div>
-
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-gray-900">Project Updates</h4>
-              <p className="text-sm text-gray-500">Receive updates about your projects</p>
+              <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} font-medium`}>Project Updates</h4>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-sm`}>Receive updates about your projects</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-            </label>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  const renderAppearanceTab = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
-      <div className="bg-white rounded-xl p-6 shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Theme Settings</h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-gray-900">Dark Mode</h4>
-              <p className="text-sm text-gray-500">Switch between light and dark themes</p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" />
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                name="projectUpdates"
+                checked={notificationSettings.projectUpdates}
+                onChange={handleNotificationToggle}
+                disabled={loading}
+              />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
           </div>
@@ -719,13 +743,13 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      <div className="bg-white rounded-xl p-6 shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Privacy Settings</h3>
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-sm border dark:border-gray-700`}>
+        <h3 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-lg font-semibold mb-4`}>Privacy Settings</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-gray-900">Profile Visibility</h4>
-              <p className="text-sm text-gray-500">Control who can see your profile</p>
+              <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} font-medium`}>Profile Visibility</h4>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-sm`}>Control who can see your profile</p>
             </div>
             <select 
               value={privacySettings.profileVisibility}
@@ -733,7 +757,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 ...prev,
                 profileVisibility: e.target.value as 'public' | 'connections' | 'private'
               }))}
-              className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
             >
               <option value="public">Public</option>
               <option value="connections">Connections Only</option>
@@ -743,8 +767,8 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-gray-900">Show Online Status</h4>
-              <p className="text-sm text-gray-500">Let others see when you're online</p>
+              <h4 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} font-medium`}>Show Online Status</h4>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-sm`}>Let others see when you're online</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input 
@@ -780,12 +804,12 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      <div className="bg-red-50 rounded-xl p-6 border border-red-200">
-        <h3 className="text-lg font-semibold text-red-900 mb-4">Danger Zone</h3>
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-red-50'} rounded-xl p-6 border border-red-200`}>
+        <h3 className={`${theme === 'dark' ? 'text-white' : 'text-red-900'} text-lg font-semibold mb-4`}>Danger Zone</h3>
         <div className="space-y-4">
           <div>
-            <h4 className="font-medium text-red-900">Delete Account</h4>
-            <p className="text-sm text-red-700 mt-1">
+            <h4 className={`${theme === 'dark' ? 'text-white' : 'text-red-900'} font-medium`}>Delete Account</h4>
+            <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-red-700'} text-sm mt-1`}>
               Permanently delete your account and all associated data. This action cannot be undone.
             </p>
             
@@ -863,7 +887,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       case 'notifications':
         return renderNotificationsTab();
       case 'appearance':
-        return renderAppearanceTab();
+        return <AppearanceTab />;
       case 'privacy':
         return renderPrivacyTab();
       case 'danger':
@@ -874,21 +898,21 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`${theme === 'dark' ? 'bg-gray-900' : 'bg-white'} min-h-screen transition-colors duration-200 py-8`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
             <SettingsIcon className="w-8 h-8 text-purple-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+            <h1 className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'} text-3xl font-bold`}>Settings</h1>
           </div>
-          <p className="text-gray-600">Manage your account settings and preferences</p>
+          <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm`}>Manage your account settings and preferences</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border p-4">
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm border p-4`}>
               <nav className="space-y-2">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;

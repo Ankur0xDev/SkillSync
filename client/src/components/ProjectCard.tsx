@@ -114,7 +114,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
     >
       {/* Header */}
       <div className="p-6">
@@ -134,8 +134,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               )}
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">{project.user.name}</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">{project.user.name}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {new Date(project.createdAt).toLocaleDateString()}
               </p>
             </div>
@@ -149,7 +149,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Title and Description */}
         <div className="mb-2">
           <div className="flex items-center space-x-2 mb-2">
-            <h2 className="text-xl font-bold text-gray-900 line-clamp-2 flex-1">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 line-clamp-2 flex-1">
               {project.title}
             </h2>
             {project.projectUrl && (
@@ -159,7 +159,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               </span>
             )}
           </div>
-          <p className="text-gray-600 line-clamp-3">
+          <p className="text-gray-600 dark:text-gray-400 line-clamp-3">
             {project.description}
           </p>
         </div>
@@ -186,7 +186,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Team Info */}
         {project.teamMemberCount > 0 && (
           <div className="mb-4">
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
               <Users className="w-4 h-4" />
               <span>{project.teamMemberCount} team member{project.teamMemberCount !== 1 ? 's' : ''}</span>
               {project.pendingTeamRequestsCount > 0 && (
@@ -214,11 +214,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
               <span>{likeCount}</span>
             </button>
-            <div className="flex items-center space-x-1 text-sm text-gray-500">
+            <div className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400">
               <MessageCircle className="w-4 h-4" />
               <span>{project.commentCount}</span>
             </div>
-            <div className="flex items-center space-x-1 text-sm text-gray-500">
+            <div className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400">
               <Eye className="w-4 h-4" />
               <span>{project.likes.length}</span>
             </div>

@@ -96,7 +96,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId, otherUser }) => {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* Chat header */}
       <div className="bg-white border-b p-4 flex items-center space-x-3">
         <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">

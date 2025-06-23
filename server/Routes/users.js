@@ -905,17 +905,22 @@ router.put('/change-email', auth, [
 
 // Update notification settings
 router.put('/notification-settings', auth, [
-  body('emailNotifications').isBoolean().withMessage('emailNotifications must be a boolean'),
+  body('emailNotifications').optional().isBoolean().withMessage('emailNotifications must be a boolean'),
+  body('connectionRequests').optional().isBoolean().withMessage('connectionRequests must be a boolean'),
+  body('projectUpdates').optional().isBoolean().withMessage('projectUpdates must be a boolean'),
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
     }
-    const { emailNotifications } = req.body;
+    const updates = {};
+    if (req.body.emailNotifications !== undefined) updates['notificationSettings.emailNotifications'] = req.body.emailNotifications;
+    if (req.body.connectionRequests !== undefined) updates['notificationSettings.connectionRequests'] = req.body.connectionRequests;
+    if (req.body.projectUpdates !== undefined) updates['notificationSettings.projectUpdates'] = req.body.projectUpdates;
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { 'notificationSettings.emailNotifications': emailNotifications },
+      updates,
       { new: true }
     ).select('-password');
     if (!user) {

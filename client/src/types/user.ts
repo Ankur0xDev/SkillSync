@@ -28,4 +28,9 @@ export interface User {
     profileVisibility: 'public' | 'connections' | 'private';
     showOnlineStatus: boolean;
   };
+  notificationSettings?: {
+    emailNotifications: boolean;
+    connectionRequests: boolean;
+    projectUpdates: boolean;
+  };
 } 
