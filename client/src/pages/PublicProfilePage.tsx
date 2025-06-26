@@ -20,8 +20,13 @@ import { useAuth } from '../Contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { VerifiedBadge } from '../components/VerifiedBadge ';
+import { SocialStats } from '../components/SocialStats';
+
 interface PublicProfile {
   _id: string;
+  username: string;
+  email: string;
+  updatedAt: string;
   name: string;
   bio: string;
   skills: string[];
@@ -288,6 +293,11 @@ export const PublicProfilePage: React.FC = () => {
             </div>
           </div>
         </motion.div>
+
+        {/* Social Stats Section */}
+        {(profile.github || profile.linkedin) && (
+          <SocialStats user={profile} />
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
