@@ -106,35 +106,49 @@ export const EditProfilePage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
-    // Format LinkedIn URL if needed
-    if (name === 'linkedin') {
+
+    // Format and validate GitHub URL if editing the github field
+    if (name === 'github') {
       let formattedUrl = value.trim();
-      
-      // If it's just the username part, add the full URL
+      // If it's not empty and doesn't start with http, format as GitHub URL
       if (formattedUrl && !formattedUrl.startsWith('http')) {
-        // Check if it starts with www.
-        if (formattedUrl.startsWith('www.')) {
-          formattedUrl = `https://${formattedUrl}`;
-        } else {
-          formattedUrl = `https://www.linkedin.com/in/${formattedUrl.replace(/^\/+|\/+$/g, '')}`;
-        }
+        formattedUrl = `https://github.com/${formattedUrl.replace(/^\/+/g, '').replace(/\/+$/g, '')}`;
       }
-      
-      // Validate LinkedIn URL format
-      const linkedinRegex = /^https?:\/\/(www\.)?linkedin\.com\/in\/[\w-]+(\/)?$/;
-      if (formattedUrl && !linkedinRegex.test(formattedUrl)) {
-        toast.error('Please enter a valid LinkedIn URL (e.g., https://www.linkedin.com/in/username)');
-        return;
+      // Validate GitHub URL format
+      const githubRegex = /^https?:\/\/(www\.)?github\.com\/[\w-]+(\/)?$/;
+      if (formattedUrl && !githubRegex.test(formattedUrl)) {
+        toast.error('Please enter a valid GitHub URL (e.g., https://github.com/username)');
+        return; // Do not update form state if invalid
       }
-      
       setFormData(prev => ({
         ...prev,
         [name]: formattedUrl
       }));
       return;
     }
-    
+
+    // Format and validate LinkedIn URL if editing the linkedin field
+    if (name === 'linkedin') {
+      let formattedUrl = value.trim();
+      if (formattedUrl && !formattedUrl.startsWith('http')) {
+        if (formattedUrl.startsWith('www.')) {
+          formattedUrl = `https://${formattedUrl}`;
+        } else {
+          formattedUrl = `https://www.linkedin.com/in/${formattedUrl.replace(/^\/+/g, '').replace(/\/+$/g, '')}`;
+        }
+      }
+      const linkedinRegex = /^https?:\/\/(www\.)?linkedin\.com\/in\/[\w-]+(\/)?$/;
+      if (formattedUrl && !linkedinRegex.test(formattedUrl)) {
+        toast.error('Please enter a valid LinkedIn URL (e.g., https://www.linkedin.com/in/username)');
+        return;
+      }
+      setFormData(prev => ({
+        ...prev,
+        [name]: formattedUrl
+      }));
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: value

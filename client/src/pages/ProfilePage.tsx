@@ -129,6 +129,8 @@ export const ProfilePage: React.FC = () => {
     'flexible': 'bg-purple-100 text-purple-800'
   };
 
+
+
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} py-8`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
