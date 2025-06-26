@@ -188,6 +188,7 @@ export const EditProfilePage: React.FC = () => {
     e.preventDefault();
     setSaving(true);
 
+
     try {
       const response = await axios.put('/users/profile', formData);
       updateUser(response.data.user);

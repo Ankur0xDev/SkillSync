@@ -196,7 +196,7 @@ export const ProfilePage: React.FC = () => {
         </motion.div>
 
         {/* Social Stats */}
-        {(profile.githubUrl || profile.linkedin) && (
+        {(profile.github || profile.linkedin) && (
           <SocialStats user={profile} />
         )}
 
