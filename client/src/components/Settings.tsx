@@ -910,7 +910,7 @@ export const Settings: React.FC<SettingsProps> = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-sm border p-4`}>
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white '} rounded-xl shadow-sm border p-4`}>
               <nav className="space-y-2">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
@@ -918,7 +918,7 @@ export const Settings: React.FC<SettingsProps> = () => {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
+                      className={`w-full flex items-center space-x-3 ${theme==='dark' ? '' : 'text-gray-600'} px-4 py-3 rounded-lg text-left transition-colors ${
                         activeTab === tab.id
                           ? 'bg-purple-100 text-purple-700 border border-purple-200'
                           : 'text-gray-300 hover:bg-gray-50 hover:text-gray-900'
