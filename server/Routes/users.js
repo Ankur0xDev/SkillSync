@@ -934,42 +934,45 @@ router.put('/notification-settings', auth, [
   }
 });
 
-// router.post('/resend-otp',[
-//   body('email').isEmail().withMessage('Please Enter a valid email'),
-// ],async (req,res)=>{
-//   const {email}=req.body;
-//   const pendUser=PendingUser.FindOne({email})
-//   const existingUser=User.findOne({email})
-//     if(!pendUser || !existingUser){
-//       return res.status(400).json({message:'user not found'})
-//     }
-//   if(existingUser.isVerified==='true'){
-//     return res.status.json({message:'User is already verified'})
-//   }
-//   const NewOTP=Math.floor(100000+Math.random()*900000)
-//   if(pendUser){
-//     pendUser.otp=NewOTP;
-//     pendUser.otpExpiresAt=new Date(Date.now()+10*60*1000)
-//     await pendUser.save();
-//   }else{
-//     const newPendingUser=new PendingUser({
-//       email,
-//       otp:NewOTP,
-//     })
-//   }
-//   const transporter=nodemailer.createTransport({
-//     auth:{
-//       user:process.env.EMAIL,
-//       pass:process.env.EMAIL_PASSWORD
-//     }
-//   })
-//   await transporter.sendMail({
-//     from:process.env.EMAIL,
-//     to:email,
-//     subject:"Your skillSync OTP verification",
-//     text:`Your OTP is ${NewOTP}. It expires in 10 minutes`
-//   })
-//     res.json({message:'OTP sent successfully'}) 
-// })
+router.post('/resend-otp',[
+  body('email').isEmail().withMessage('Please Enter a valid email'),
+],async (req,res)=>{
+  const {email}=req.body;
+  console.log(req.body)
+  const pendUser=await PendingUser.findOne({email})
+  const existingUser=await User.findOne({email})
+    if(!pendUser ){
+      return res.status(400).json({message:'user not found'})
+    }
+  if (existingUser && existingUser.isVerified === true) {
+  return res.status(400).json({ message: 'User is already verified' });
+}
+  const NewOTP=Math.floor(100000+Math.random()*900000)
+  if(pendUser){
+    pendUser.otp=NewOTP;
+    pendUser.otpExpiresAt=new Date(Date.now()+10*60*1000)
+    await pendUser.save();
+  }else{
+    const newPendingUser=new PendingUser({
+      email,
+      otp:NewOTP,
+    })
+  }
+  const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Your skillSync OTP verification",
+      text: `Your OTP is ${NewOTP}. It expires in 10 minutes`,
+    });
+    res.json({message:'OTP sent successfully'}) 
+})
 
 export default router 
