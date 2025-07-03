@@ -56,7 +56,7 @@ export const AuthPage: React.FC = () => {
 
   const handleResendOtp = async () => {
     try {
-      await axios.post('/auth/resend-otp', { email: pendingEmail });
+      await axios.post('/users/resend-otp', { email: pendingEmail });
       toast.success('OTP resent to your email');
       setResendCooldown(30); // 30 seconds cooldown
     } catch (error: any) {
