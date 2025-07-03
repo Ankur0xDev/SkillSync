@@ -57,7 +57,7 @@ export const PublicProfilePage: React.FC = () => {
   const [sendingRequest, setSendingRequest] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [sentRequest, setSentRequest] = useState(false);
-
+  
   useEffect(() => {
     if (id) {
       fetchProfile();

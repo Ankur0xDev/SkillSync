@@ -24,7 +24,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       animate={{ rotate: 360 }}
       transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
     >
-      <div className={`w-full h-full border-2 ${theme === 'dark' ? 'border-gray-700 border-t-gray-700' : 'border-purple-200 border-t-purple-600'} rounded-full`}></div>
+      <div className={`w-full h-full border-2 ${theme === 'dark' ? 'border-purple-200 border-t-purple-600' : 'border-purple-200 border-t-purple-600'} rounded-full`}></div>
     </motion.div>
   );
 };

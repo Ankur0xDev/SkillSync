@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, Code2 } from 'lucide-react';
@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import { OtpInput } from '../components/OtpInput';
 import { useNavigate } from 'react-router-dom';
+
 export const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated, loading, verifyOtp } = useAuth();
@@ -24,7 +25,7 @@ export const AuthPage: React.FC = () => {
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
-  
+
   // Add state for forgot password modal/flow
   const [showForgot, setShowForgot] = useState(false);
   const [forgotStep, setForgotStep] = useState<'email' | 'otp' | 'success'>('email');
@@ -32,6 +33,36 @@ export const AuthPage: React.FC = () => {
   const [forgotOtp, setForgotOtp] = useState('');
   const [forgotNewPassword, setForgotNewPassword] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
+
+  // Add this useEffect to show the toast when loading is true
+  useEffect(() => {
+    let toastId: string | undefined;
+    if (loading) {
+      toastId = toast.loading('Backend is deployed on Render.com. Please wait for at least 1 minute');
+    }
+    return () => {
+      if (toastId) toast.dismiss(toastId);
+    };
+  }, [loading]);
+
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
+
+  const handleResendOtp = async () => {
+    try {
+      await axios.post('/auth/resend-otp', { email: pendingEmail });
+      toast.success('OTP resent to your email');
+      setResendCooldown(30); // 30 seconds cooldown
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to resend OTP');
+    }
+  };
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
@@ -61,14 +92,23 @@ export const AuthPage: React.FC = () => {
         await login(formData.email, formData.password);
       }
     } catch (error: any) {
-      toast.error(
+      const errorMsg =
         typeof error.response?.data?.message === 'string'
           ? error.response.data.message
           : Array.isArray(error.response?.data?.errors)
             ? error.response.data.errors.map((e: any) => e.msg).join(', ')
-            : 'Registration/Login failed'
-      );
+            : 'Registration/Login failed';
 
+      toast.error(errorMsg);
+
+      // If the error is about existing user or pending verification, show OTP form
+      if (
+        !isLogin &&
+        errorMsg === 'A user already exists with this email or pending verification'
+      ) {
+        setShowOtp(true);
+        setPendingEmail(formData.email);
+      }
     } finally {
       setFormLoading(false);
     }
@@ -160,6 +200,7 @@ export const AuthPage: React.FC = () => {
         <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
           {/* Header */}
           <div className="text-center mb-8">
+            {/* <div className='hidden'>{toast.loading('Backend is deployed on Render.com . Please wait for atleast 1 minute')}</div> */}
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center">
                 <Code2 className="w-8 h-8 text-white" />
@@ -184,6 +225,16 @@ export const AuthPage: React.FC = () => {
                   Enter the 6-digit OTP sent to your email
                 </label>
                 <OtpInput value={otp} onChange={setOtp} length={6} />
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  disabled={resendCooldown > 0 || formLoading}
+                  onClick={handleResendOtp}
+                  className="text-sm text-purple-400 hover:text-purple-600 disabled:opacity-50"
+                >
+                  {resendCooldown > 0 ? `Resend OTP in ${resendCooldown}s` : 'Resend OTP'}
+                </button>
               </div>
               <button
                 type="submit"
@@ -423,5 +474,4 @@ export const AuthPage: React.FC = () => {
       )}
     </div>
   );
-}; 
- 
+};
