@@ -324,6 +324,7 @@ router.put('/profile', auth, [
   body('backgroundPicture').optional().isURL().optional({ nullable: true, checkFalsy: true })
 ], async (req, res) => {
   try {
+    console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
